@@ -45,11 +45,32 @@ class ResponseService {
         val expertRes: MutableList<String> = mutableListOf()
 
         for (expert in experts) {
-            val res: String = expert.generateResponse()
+            val res: String? = expert.generateResponse()
             res?.let { expertRes.add(it) }
         }
 
         return mergeResponses(expertRes)
+    }
+
+    private fun mergeResponses(responses: List<String>): String {
+        if (responses.isEmpty()) return "No answer found"
+
+        val phraseCounts = mutableMapOf<String, Int>()
+
+        for (response in responses) {
+            val normalizedResponse = response.trim().lowercase()
+            phraseCounts[normalizedResponse] = phraseCounts.getOrDefault(normalizedResponse, 0) + 1
+        }
+
+        return phraseCounts.entries
+            .sortedByDescending { it.value }
+            .joinToString(", ") { it.key }
+    }
+
+    private fun isSatisfactory(response: String): Boolean {
+        // criteria here is that we have converged on a singular phrase
+        val phrases = response.split(", ").map { it.trim() }.toSet()
+        return phrases.size == 1
     }
 
     private fun updateExperts(knowledge: String) {
@@ -58,15 +79,10 @@ class ResponseService {
         }
     }
 
-    private fun isSatisfactory(response: String): Boolean {
-        return true // TODO: idk
-    }
-
-    private fun mergeResponses(responses: List<String>): String {
-        return "Not implemented yet" // TODO: determine if there's a conflict, and if so, pick which takes precedence
-    }
-
     private suspend fun contextFor(symbol: String): String {
-        return "Not implemented yet" // TODO: idk search google fire emoji
+        val expert = experts.firstOrNull() ?: return "No context available"
+        val knowledge = "Ignore everything else. Please concisely describe background context for: $symbol"
+        expert.updateKnowledge(knowledge)
+        return expert.generateResponse() ?: "No context available"
     }
 }
