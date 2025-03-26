@@ -39,7 +39,8 @@ class ResponseServiceTest {
         coEvery { expert2.updateKnowledge(any()) } just Runs
 
         responseService.addExpert(expert1)  
-        responseService.addExpert(expert2)      
+        responseService.addExpert(expert2)
+
         val response = responseService.generateResponse()
 
         assertEquals("new balance", response.getSymbol())
@@ -60,5 +61,21 @@ class ResponseServiceTest {
 
         coVerify(exactly = 3) { expert1.generateResponse() }
         coVerify(exactly = 3) { expert1.updateKnowledge(any()) }
+    }
+
+    @Test
+    fun `generateResponse should acquire context for final response`() = runBlocking {
+        coEvery { expert1.generateResponse() } returns "Nike" andThen "Some facts about Nike"
+        coEvery { expert1.updateKnowledge(any()) } just Runs
+
+        coEvery { expert2.generateResponse() } returns "Nike"
+        coEvery { expert2.updateKnowledge(any()) } just Runs
+
+        responseService.addExpert(expert1)  
+        responseService.addExpert(expert2)
+
+        val response = responseService.generateResponse()
+
+        assertEquals("Some facts about Nike", response.getContext())
     }
 }

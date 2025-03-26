@@ -7,6 +7,8 @@ import com.g5.model.Response
 class ResponseService {
     companion object {
         private const val MAX_NUM_TRIES = 3
+        private const val DEFAULT_SYMBOL = "Could not identify"
+        private const val DEFAULT_CONTEXT = "No context available"
     }
 
     private val experts: MutableList<ExpertInterface> = mutableListOf()
@@ -28,8 +30,8 @@ class ResponseService {
 
     suspend fun generateResponse(): Response {
         var acceptable: Boolean = false
-        var finalId: String = "Could not identify"
-        var tries: Int = 1
+        var finalId: String = DEFAULT_SYMBOL
+        var tries: Int = 0
 
         while (!acceptable && tries < MAX_NUM_TRIES) {
             val newId: String = useExperts(input)
@@ -46,7 +48,7 @@ class ResponseService {
 
         val formattedResponse: Response = Response()
         formattedResponse.setSymbol(finalId)
-        formattedResponse.setContext(contextFor(finalId))
+        if (finalId != DEFAULT_SYMBOL) formattedResponse.setContext(contextFor(finalId))
 
         return formattedResponse
     }
@@ -63,7 +65,7 @@ class ResponseService {
     }
 
     private fun mergeResponses(responses: List<String>): String {
-        if (responses.isEmpty()) return "No answer found"
+        if (responses.isEmpty()) return DEFAULT_SYMBOL
 
         val phraseCounts = mutableMapOf<String, Int>()
 
@@ -90,9 +92,9 @@ class ResponseService {
     }
 
     private suspend fun contextFor(symbol: String): String {
-        val expert = experts.firstOrNull() ?: return "No context available"
-        val knowledge = "Ignore everything else. Please concisely describe background context for: $symbol"
+        val expert = experts.firstOrNull() ?: return DEFAULT_CONTEXT
+        val knowledge = "Ignore everything else. Please concisely describe background context for: $symbol" // DISCUSS: should we have a "clearKnowledge" method added to expert interface?
         expert.updateKnowledge(knowledge)
-        return expert.generateResponse() ?: "No context available"
+        return expert.generateResponse() ?: DEFAULT_CONTEXT
     }
 }
