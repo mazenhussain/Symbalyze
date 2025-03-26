@@ -1,4 +1,4 @@
-package com.example.symbalyze
+package com.g5.symbalyze
 
 import org.junit.Test
 

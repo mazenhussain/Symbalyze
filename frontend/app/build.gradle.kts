@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.symbalyze"
+    namespace = "com.g5.symbalyze"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.symbalyze"
+        applicationId = "com.g5.symbalyze"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

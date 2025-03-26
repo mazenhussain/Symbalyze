@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.ktor)
 }
 
-group = "com.example"
+group = "com.g5"
 version = "0.0.1"
 
 application {

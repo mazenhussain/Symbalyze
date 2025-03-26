@@ -1,4 +1,4 @@
-package com.example.symbalyze.ui.theme
+package com.g5.symbalyze.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

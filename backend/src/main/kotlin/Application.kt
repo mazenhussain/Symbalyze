@@ -1,4 +1,4 @@
-package com.example
+package com.g5
 
 import io.ktor.server.application.*
 
