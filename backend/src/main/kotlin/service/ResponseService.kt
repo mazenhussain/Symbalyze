@@ -5,11 +5,19 @@ import com.g5.model.Prompt
 import com.g5.model.Response
 
 class ResponseService {
+    companion object {
+        private const val MAX_NUM_TRIES = 3
+    }
+
     private val experts: MutableList<ExpertInterface> = mutableListOf()
     private var input: String = ""
 
     fun addExpert(expert: ExpertInterface) {
         experts.add(expert)
+    }
+
+    fun getExpertCount(): Int {
+        return experts.size
     }
 
     fun submitPrompt(prompt: Prompt) {
@@ -21,8 +29,9 @@ class ResponseService {
     suspend fun generateResponse(): Response {
         var acceptable: Boolean = false
         var finalId: String = "Could not identify"
+        var tries: Int = 1
 
-        while (!acceptable) {
+        while (!acceptable && tries < MAX_NUM_TRIES) {
             val newId: String = useExperts(input)
             acceptable = isSatisfactory(newId)
 
@@ -30,6 +39,7 @@ class ResponseService {
                 finalId = newId
                 break
             } else {
+                tries += 1
                 updateExperts(newId)
             }
         }
