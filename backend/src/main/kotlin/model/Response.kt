@@ -1,11 +1,11 @@
 package com.g5.model
 
 class Response {
-    private var symbol: String
-    private var context: String
-    private var confidence: Int 
+    private var symbol: String = ""
+    private var context: String = ""
+    private var confidence: Int = 0
 
-    fun setSymbol(identifiedSymbol: string) {
+    fun setSymbol(identifiedSymbol: String) {
         symbol = identifiedSymbol
     }
 
@@ -13,7 +13,7 @@ class Response {
         return symbol
     }
 
-    fun setContext(foundContext: string) {
+    fun setContext(foundContext: String) {
         context = foundContext
     }
 

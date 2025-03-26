@@ -41,7 +41,7 @@ class ResponseService {
         return formattedResponse
     }
 
-    private fun useExperts(input: String): String {
+    private suspend fun useExperts(input: String): String {
         val expertRes: MutableList<String> = mutableListOf()
 
         for (expert in experts) {
@@ -73,7 +73,7 @@ class ResponseService {
         return phrases.size == 1
     }
 
-    private fun updateExperts(knowledge: String) {
+    private suspend fun updateExperts(knowledge: String) {
         for (expert in experts) {
             expert.updateKnowledge(knowledge)
         }
