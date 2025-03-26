@@ -2,41 +2,71 @@ package com.g5.service
 
 import com.g5.model.ExpertInterface
 import com.g5.model.Prompt
+import com.g5.model.Response
 
 class ResponseService {
     private val experts: MutableList<ExpertInterface> = mutableListOf()
-    private var input: String
+    private var input: String = ""
 
     fun addExpert(expert: ExpertInterface) {
         experts.add(expert)
     }
 
     fun submitPrompt(prompt: Prompt) {
-        // TODO: format prompt object into string, then set that to the input attribute
+        // TODO: format prompt object into string
 
         input = "Not implemented yet"
     }
 
-    suspend fun generateResponse(input: String): String? {
+    suspend fun generateResponse(): Response {
+        var acceptable: Boolean = false
+        var finalId: String = "Could not identify"
+
+        while (!acceptable) {
+            val newId: String = useExperts(input)
+            acceptable = isSatisfactory(newId)
+
+            if (acceptable) {
+                finalId = newId
+                break
+            } else {
+                updateExperts(newId)
+            }
+        }
+
+        val formattedResponse: Response = Response()
+        formattedResponse.setSymbol(finalId)
+        formattedResponse.setContext(contextFor(finalId))
+
+        return formattedResponse
+    }
+
+    private fun useExperts(input: String): String {
         val expertRes: MutableList<String> = mutableListOf()
 
         for (expert in experts) {
-            val res: String = useExpert(expert, input)
-            if (res != null) expertRes.add(res)
+            val res: String = expert.generateResponse()
+            res?.let { expertRes.add(it) }
         }
 
-        val finalRes: String = mergeResponses(expertRes)
-
-        // TODO: find a way to determine if this is a satisfactory response, and if not, update expert informations using their answers and repeat
-
-        return finalRes
+        return mergeResponses(expertRes)
     }
 
-    private fun useExpert(expert: ExpertInterface, input: String): String? {
-        return expert.generateResponse(input)
+    private fun updateExperts(knowledge: String) {
+        for (expert in experts) {
+            expert.updateKnowledge(knowledge)
+        }
     }
 
-    private fun mergeResponses(val responses: List<String>): String {
-        return "Not implemented yet"
+    private fun isSatisfactory(response: String): Boolean {
+        return true // TODO: idk
+    }
+
+    private fun mergeResponses(responses: List<String>): String {
+        return "Not implemented yet" // TODO: determine if there's a conflict, and if so, pick which takes precedence
+    }
+
+    private suspend fun contextFor(symbol: String): String {
+        return "Not implemented yet" // TODO: idk search google fire emoji
     }
 }
