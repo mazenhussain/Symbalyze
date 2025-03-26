@@ -23,6 +23,11 @@ class ResponseServiceTest {
     }
 
     @Test
+    fun `submitPrompt should call experts with string format of prompt`() {
+        // TODO: implement once available
+    }
+
+    @Test
     fun `addExpert should store experts in the list`() {
         responseService.addExpert(expert1)
         responseService.addExpert(expert2)
