@@ -127,7 +127,8 @@ fun DrawInput() {
 
             Button(
                 onClick = {
-                    // val res = async { identifySymbol(inputImg = XXX) } <-- TODO: extract base64 from canvas
+                    // val base64 = convertCanvasToBase64(lines)
+                    // val res = async { identifySymbol(inputImg = base64) }
                     // TODO: reroute to result display UI with the response
                 },
                 modifier = Modifier.width(150.dp),
