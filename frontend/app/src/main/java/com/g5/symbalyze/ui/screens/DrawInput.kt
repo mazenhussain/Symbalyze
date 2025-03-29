@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.g5.symbalyze.api.identifySymbol
 
 data class Line(
     val start: Offset,
@@ -126,7 +127,8 @@ fun DrawInput() {
 
             Button(
                 onClick = {
-                    println("Submitted drawing: $lines") // TODO - connect to backend
+                    // val res = async { identifySymbol(inputImg = XXX) } <-- TODO: extract base64 from canvas
+                    // TODO: reroute to result display UI with the response
                 },
                 modifier = Modifier.width(150.dp),
                 colors = ButtonDefaults.buttonColors(
