@@ -11,9 +11,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.BasicText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -23,13 +28,45 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 data class Line(
-    val start: Offset, val end: Offset, val color: Color = Color.Black, val strokeWidth: Dp = 5.dp
+    val start: Offset,
+    val end: Offset,
+    val color: Color = Color.Black,
+    val strokeWidth: Dp = 5.dp
 )
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DrawInputScreen(navController: NavController) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            DrawInput()
+        }
+    }
+}
 
 @Composable
 fun DrawInput() {
@@ -37,11 +74,14 @@ fun DrawInput() {
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "draw the symbol!", style = TextStyle(
-                fontSize = 32.sp, color = Color.Black, fontWeight = FontWeight.SemiBold
+            text = "ready? draw below!",
+            style = TextStyle(
+                fontSize = 28.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.SemiBold
             ), modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .offset(y = 100.dp)
+                .offset(y = 48.dp)
         )
 
         Canvas(modifier = Modifier
@@ -81,10 +121,7 @@ fun DrawInput() {
                     containerColor = Color.Black
                 )
             ) {
-                BasicText(
-                    "clear",
-                    style = TextStyle(color = Color.White, fontWeight = FontWeight.SemiBold)
-                )
+                Text("clear", fontWeight = FontWeight.SemiBold)
             }
 
             Button(
@@ -96,10 +133,7 @@ fun DrawInput() {
                     containerColor = Color.Black
                 )
             ) {
-                BasicText(
-                    "submit",
-                    style = TextStyle(color = Color.White, fontWeight = FontWeight.SemiBold)
-                )
+                Text("submit", fontWeight = FontWeight.SemiBold)
             }
         }
     }
