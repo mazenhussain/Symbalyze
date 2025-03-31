@@ -18,6 +18,12 @@ import java.util.Base64
 import org.json.JSONObject
 
 class PromptService {
+    companion object {
+        const val IMGUR_CLIENT_ID = "d52bd5f6dec8e07"
+        const val IMGUR_UPLOAD_URL = "https://api.imgur.com/3/upload"
+        const val MEDIA_TYPE = "image/jpeg"
+    }
+
     fun processPrompt(input: String, base64: String?): Prompt {
         val imageLink = base64?.let { runBlocking {
             uploadToImgur(it)
@@ -33,10 +39,6 @@ class PromptService {
     }
 
     suspend fun uploadToImgur(base64Image: String): String {
-        val clientId = "d52bd5f6dec8e07" // LOL please don't abuse this... this was the only free solution i found
-        val url = "https://api.imgur.com/3/upload"
-        val mediaType = "image/jpeg"
-
         val decodedBytes = Base64.getDecoder().decode(base64Image.replace("data:image/\\w+;base64,".toRegex(), ""))
 
         val client = HttpClient(CIO) {
@@ -47,14 +49,15 @@ class PromptService {
 
         try {
             val response: HttpResponse = client.submitFormWithBinaryData(
-                url = url,
+                url = IMGUR_UPLOAD_URL,
                 formData = formData {
                     append("image", decodedBytes, Headers.build {
-                        append(HttpHeaders.ContentType, mediaType)
+                        append(HttpHeaders.ContentType, MEDIA_TYPE)
                     })
                 }) {
                 headers {
-                    append(HttpHeaders.Authorization, "Client-ID $clientId")
+                    // NOTE: there's any API rate limit, so please only uncomment this for demo :)
+                    // append(HttpHeaders.Authorization, "Client-ID $IMGUR_CLIENT_ID")
                 }
             }
 
