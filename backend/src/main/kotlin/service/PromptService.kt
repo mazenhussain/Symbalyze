@@ -33,7 +33,7 @@ class PromptService {
     }
 
     suspend fun uploadToImgur(base64Image: String): String {
-        val clientId = "d52bd5f6dec8e07"
+        val clientId = "d52bd5f6dec8e07" // LOL please don't abuse this... this was the only free solution i found
         val url = "https://api.imgur.com/3/upload"
         val mediaType = "image/jpeg"
 
@@ -56,6 +56,7 @@ class PromptService {
             )
 
             val jsonResponse = response.bodyAsText()
+            println("Imgur API response: $jsonResponse")
             val json = JSONObject(jsonResponse)
             return json.getJSONObject("data").getString("link")
         } catch (e: Exception) {

@@ -14,7 +14,6 @@ class ResponseServiceTest {
     private lateinit var responseService: ResponseService
     private lateinit var expert1: ExpertInterface
     private lateinit var expert2: ExpertInterface
-    private final val DUMMY_INPUT: String = ""
 
     @Before
     fun setUp() {
