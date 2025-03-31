@@ -15,8 +15,10 @@ import com.g5.model.Prompt
 import com.g5.model.Response
 
 import com.g5.service.ResponseService
+import com.g5.service.PromptService
 
 fun Application.configureRouting() {
+    val promptService = PromptService()
     val responseService = ResponseService()
 
     install(ContentNegotiation) {
@@ -31,7 +33,7 @@ fun Application.configureRouting() {
         post("/identify-symbol") {
             try {
                 val requestBody = call.receive<IdentifyRequest>()
-                val processedPrompt = Prompt() // TODO: call prompt service to process input and upload base64 string to bucket
+                val processedPrompt = promptService.processPrompt(requestBody.input, requestBody.base64)
 
                 val response = responseService.submitPrompt(processedPrompt)
                 val generatedResponse = responseService.generateResponse()
