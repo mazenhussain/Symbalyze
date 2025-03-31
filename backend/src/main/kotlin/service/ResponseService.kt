@@ -15,6 +15,7 @@ class ResponseService {
     private val knowledge: MutableList<String> = mutableListOf()
 
     private var input: String = ""
+    private var imageLink: String? = null
     private var isImage: Boolean = false
 
     fun addExpert(expert: ExpertInterface) {
@@ -26,10 +27,9 @@ class ResponseService {
     }
 
     fun submitPrompt(prompt: Prompt) {
-        // TODO: format prompt object into string
-
-        input = "Not implemented yet"
-        isImage = false
+        input = prompt.getInput()
+        imageLink = prompt.getImageLink()
+        isImage = imageLink != null
     }
 
     suspend fun generateResponse(): Response {
@@ -38,7 +38,7 @@ class ResponseService {
         var tries: Int = 0
 
         while (!acceptable && tries < MAX_NUM_TRIES) {
-            val newId: String = useExperts(if (knowledge.isEmpty()) input else addBackgroundKnowledge(input))
+            val newId: String = useExperts(generateExpertInput())
             acceptable = isSatisfactory(newId)
 
             if (acceptable) {
@@ -57,10 +57,20 @@ class ResponseService {
         return formattedResponse
     }
 
-    private fun addBackgroundKnowledge(input: String): String {
-        return "Identify the symbol given: " + input + ". Additional background information: " + knowledge.joinToString(",")
+    private fun generateExpertInput(): String {
+        if (knowledge.isEmpty()) {
+            if (isImage) {
+                return "Identify the symbol in the linked image: " + imageLink
+            }
+            return input
+        } else {
+            if (isImage) {
+                return "Identify the symbol in the linked image: " + imageLink + ". Additional background information: " + knowledge.joinToString(",")
+            }
+            return "Identify the symbol given: " + input + ". Additional background information: " + knowledge.joinToString(",")
+        }
     }
-
+    
     private suspend fun useExperts(input: String): String {
         val expertRes: MutableList<String> = mutableListOf()
 

@@ -14,7 +14,6 @@ class ResponseServiceTest {
     private lateinit var responseService: ResponseService
     private lateinit var expert1: ExpertInterface
     private lateinit var expert2: ExpertInterface
-    private final val DUMMY_INPUT: String = ""
 
     @Before
     fun setUp() {
@@ -22,12 +21,7 @@ class ResponseServiceTest {
         expert1 = mockk()
         expert2 = mockk()
     }
-
-    @Test
-    fun `submitPrompt should call experts with string format of prompt`() {
-        // TODO: implement once available
-    }
-
+    
     @Test
     fun `addExpert should store experts in the list`() {
         responseService.addExpert(expert1)
