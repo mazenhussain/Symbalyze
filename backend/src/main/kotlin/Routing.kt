@@ -21,6 +21,8 @@ fun Application.configureRouting() {
     val promptService = PromptService()
     val responseService = ResponseService()
 
+    // TODO: add concrete experts to responseService
+
     install(ContentNegotiation) {
         jackson()
     }

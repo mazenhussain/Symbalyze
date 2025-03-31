@@ -64,7 +64,8 @@ class PromptService {
             val jsonResponse = response.bodyAsText()
             println("Imgur API response: $jsonResponse")
             val json = JSONObject(jsonResponse)
-            return json.getJSONObject("data").getString("link")
+            val data = json.getJSONObject("data")
+            return if (data != null) data.getString("link") else "https://bluemoji.io/cdn-proxy/646218c67da47160c64a84d5/66b3e5760608f3f68cb0b04b_93.png"
         } catch (e: Exception) {
             println("Upload failed: ${e.message}")
             return "Upload failed"
