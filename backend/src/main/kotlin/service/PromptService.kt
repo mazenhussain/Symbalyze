@@ -52,8 +52,11 @@ class PromptService {
                     append("image", decodedBytes, Headers.build {
                         append(HttpHeaders.ContentType, mediaType)
                     })
+                }) {
+                headers {
+                    append(HttpHeaders.Authorization, "Client-ID $clientId")
                 }
-            )
+            }
 
             val jsonResponse = response.bodyAsText()
             println("Imgur API response: $jsonResponse")
