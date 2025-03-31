@@ -42,7 +42,7 @@ class ResponseService {
                 break
             } else {
                 tries += 1
-                updateExperts(newId)
+                //updateExperts(newId)
             }
         }
 
@@ -57,7 +57,7 @@ class ResponseService {
         val expertRes: MutableList<String> = mutableListOf()
 
         for (expert in experts) {
-            val res: String? = expert.generateResponse()
+            val res: String? = expert.generateResponse(input) // Unsure
             res?.let { expertRes.add(it) }
         }
 
@@ -85,16 +85,15 @@ class ResponseService {
         return phrases.size == 1
     }
 
-    private suspend fun updateExperts(knowledge: String) {
-        for (expert in experts) {
-            expert.updateKnowledge(knowledge)
-        }
-    }
+//    private suspend fun updateExperts(knowledge: String) {
+//        for (expert in experts) {
+//            expert.updateKnowledge(knowledge)
+//        }
+//    }
 
     private suspend fun contextFor(symbol: String): String {
         val expert = experts.firstOrNull() ?: return DEFAULT_CONTEXT
         val knowledge = "Ignore everything else. Please concisely describe background context for: $symbol" // DISCUSS: should we have a "clearKnowledge" method added to expert interface?
-        expert.updateKnowledge(knowledge)
-        return expert.generateResponse() ?: DEFAULT_CONTEXT
+        return expert.generateResponse(knowledge) ?: DEFAULT_CONTEXT // Unsure
     }
 }

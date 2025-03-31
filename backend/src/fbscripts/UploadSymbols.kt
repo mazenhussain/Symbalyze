@@ -18,11 +18,9 @@ data class Symbol(
 
 fun initFirebase() {
     val serviceAccount = FileInputStream("src/main/resources/firebase-admin.json")
-
     val options = FirebaseOptions.builder()
         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
         .build()
-
     FirebaseApp.initializeApp(options)
     println("✅ Firebase initialized.")
 }
@@ -41,9 +39,8 @@ fun uploadSymbols(symbols: List<Symbol>) {
 
 fun main() {
     initFirebase()
-    println("Uploading symbols...")
     uploadSymbols(symbols)
-    println("Upload function completed.")
+    println("☑\uFE0F Completed Upload Procedure ☑\uFE0F")
 }
 
 val symbols = listOf(
@@ -2190,5 +2187,324 @@ val symbols = listOf(
         history = "Traditionally crafted from red coral, gold, or silver, believed to ward off negative energies and the evil eye.",
         url = "https://apnews.com/article/4d6cc5d8e05b7d515ea72ab6081e504e",
         tags = listOf("Italy", "amulet", "luck", "protection", "prosperity")
-    ) // Cultural/Historical Symbols
+    ), // Cultural/Historical Symbols
+    Symbol( // Logos
+        name = "Apple",
+        category = "Logos",
+        description = "A stylized apple with a bite taken out of the right side.",
+        history = "Designed in 1977 by Rob Janoff; represents knowledge and sleek minimalism.",
+        url = "https://en.wikipedia.org/wiki/Apple_Inc.",
+        tags = listOf("apple shape", "right bite", "leaf on top", "monochrome", "fruit silhouette", "technology logo")
+    ),
+    Symbol(
+        name = "Nike Swoosh",
+        category = "Logos",
+        description = "A curved checkmark-like shape sweeping upward, symbolizing movement.",
+        history = "Created in 1971 by Carolyn Davidson; inspired by the wing of Nike, the Greek goddess of victory.",
+        url = "https://en.wikipedia.org/wiki/Nike,_Inc.",
+        tags = listOf("curved line", "checkmark shape", "single swoosh", "dynamic", "italic motion", "sports logo")
+    ),
+    Symbol(
+        name = "McDonald's Golden Arches",
+        category = "Logos",
+        description = "Two symmetrical golden arches forming the letter M.",
+        history = "Introduced in 1968; intended to evoke familiarity and fast food architecture.",
+        url = "https://en.wikipedia.org/wiki/McDonald's",
+        tags = listOf("golden arches", "symmetrical M", "rounded top", "yellow", "twin curves", "fast food logo")
+    ),
+    Symbol(
+        name = "Starbucks Siren",
+        category = "Logos",
+        description = "A two-tailed mermaid with long hair in a circular green emblem.",
+        history = "Based on a 16th-century Norse woodcut; represents allure, the sea, and Seattle’s maritime culture.",
+        url = "https://en.wikipedia.org/wiki/Starbucks",
+        tags = listOf("circle logo", "siren", "two tails", "green background", "long hair", "mermaid", "coffee brand")
+    ),
+    Symbol(
+        name = "Amazon Smile",
+        category = "Logos",
+        description = "A wordmark with a yellow curved arrow from A to Z underneath.",
+        history = "The arrow represents a wide range of products and a smile (customer satisfaction).",
+        url = "https://en.wikipedia.org/wiki/Amazon_(company)",
+        tags = listOf("curved arrow", "smile shape", "A to Z", "wordmark", "yellow underline", "ecommerce logo")
+    ),
+    Symbol(
+        name = "FedEx",
+        category = "Logos",
+        description = "A wordmark with a hidden right-facing arrow between the E and X.",
+        history = "Designed in 1994; the negative space arrow symbolizes speed and accuracy.",
+        url = "https://en.wikipedia.org/wiki/FedEx",
+        tags = listOf("wordmark", "hidden arrow", "negative space", "purple and orange", "E and X gap", "shipping logo")
+    ),
+    Symbol(
+        name = "Toyota",
+        category = "Logos",
+        description = "Three overlapping ovals forming a symmetrical abstract T.",
+        history = "Introduced in 1989 to represent unification of hearts and advanced technology.",
+        url = "https://en.wikipedia.org/wiki/Toyota",
+        tags = listOf("three ovals", "interlocking loops", "horizontal and vertical", "abstract T", "chrome emblem", "car brand")
+    ),
+    Symbol(
+        name = "BMW",
+        category = "Logos",
+        description = "A circle divided into alternating blue and white quadrants, surrounded by a black ring.",
+        history = "Represents a spinning propeller and the Bavarian flag.",
+        url = "https://en.wikipedia.org/wiki/BMW",
+        tags = listOf("circle logo", "blue and white quarters", "propeller", "black outer ring", "luxury car", "German brand")
+    ),
+    Symbol(
+        name = "Mercedes-Benz",
+        category = "Logos",
+        description = "A three-pointed silver star enclosed in a circle.",
+        history = "Symbolizes land, sea, and air dominance in transportation.",
+        url = "https://en.wikipedia.org/wiki/Mercedes-Benz",
+        tags = listOf("three-point star", "thin circle", "metallic silver", "minimalist", "automotive", "luxury")
+    ),
+    Symbol(
+        name = "Pepsi Globe",
+        category = "Logos",
+        description = "A circle with red, white, and blue swirling wave patterns.",
+        history = "The modern version was introduced in 2008, symbolizing global movement and refreshment.",
+        url = "https://en.wikipedia.org/wiki/Pepsi",
+        tags = listOf("color swirl", "red top", "white wave", "blue bottom", "circular logo", "soft drink", "beverage brand")
+    ),
+    Symbol(
+        name = "Google",
+        category = "Logos",
+        description = "A multicolored wordmark with distinctive geometric letter shapes.",
+        history = "The current flat logo was launched in 2015 to reflect simplicity and approachability.",
+        url = "https://en.wikipedia.org/wiki/Google",
+        tags = listOf("multicolor text", "blue red yellow green", "sans-serif", "geometric letters", "flat logo", "tech brand")
+    ),
+    Symbol(
+        name = "Facebook (Meta)",
+        category = "Logos",
+        description = "An infinity loop rotated vertically, representing connection and the metaverse.",
+        history = "Introduced in 2021 as Meta’s rebranding to emphasize a virtual future.",
+        url = "https://en.wikipedia.org/wiki/Meta_Platforms",
+        tags = listOf("infinity loop", "vertical twist", "minimalist", "blue icon", "metaverse", "social media")
+    ),
+    Symbol(
+        name = "YouTube",
+        category = "Logos",
+        description = "A red play button triangle inside a rounded rectangle, usually beside black text.",
+        history = "Known globally for video content; redesigned in 2017 to emphasize the play icon.",
+        url = "https://en.wikipedia.org/wiki/YouTube",
+        tags = listOf("red play button", "white triangle", "rounded rectangle", "video platform", "streaming", "media")
+    ),
+    Symbol(
+        name = "Instagram",
+        category = "Logos",
+        description = "A gradient square camera outline with a small circle inside.",
+        history = "Introduced in 2016 to modernize the original camera icon with colorful gradients.",
+        url = "https://en.wikipedia.org/wiki/Instagram",
+        tags = listOf("rounded square", "camera shape", "gradient pink orange purple", "white lines", "social media", "photography")
+    ),
+    Symbol(
+        name = "LinkedIn",
+        category = "Logos",
+        description = "A simple blue square with white 'in' text inside.",
+        history = "Used to represent professionalism and networking.",
+        url = "https://en.wikipedia.org/wiki/LinkedIn",
+        tags = listOf("blue square", "white letters", "'in' text", "minimal logo", "professional network")
+    ),
+    Symbol(
+        name = "Twitter (X)",
+        category = "Logos",
+        description = "A bold, angular X symbol representing the rebrand from Twitter.",
+        history = "Elon Musk rebranded Twitter to 'X' in 2023 with a sleek black-and-white logo.",
+        url = "https://en.wikipedia.org/wiki/Twitter",
+        tags = listOf("angular X", "black and white", "monochrome", "bold strokes", "social media", "rebrand")
+    ),
+    Symbol(
+        name = "Spotify",
+        category = "Logos",
+        description = "A green circle with three curved black soundwave lines.",
+        history = "Represents digital music streaming and audio broadcast.",
+        url = "https://en.wikipedia.org/wiki/Spotify",
+        tags = listOf("green circle", "black wave lines", "soundwaves", "simple icon", "music", "audio")
+    ),
+    Symbol(
+        name = "Netflix",
+        category = "Logos",
+        description = "A red stylized 'N' made of ribbon-like diagonal bars on black.",
+        history = "Designed to represent cinematic feel with clean, minimal visuals.",
+        url = "https://en.wikipedia.org/wiki/Netflix",
+        tags = listOf("red N", "black background", "diagonal bars", "ribbon style", "streaming", "cinema logo")
+    ),
+    Symbol(
+        name = "Adobe",
+        category = "Logos",
+        description = "A stylized white 'A' with sharp triangular forms on a red square.",
+        history = "The angular A design reflects creative sharpness and visual precision.",
+        url = "https://en.wikipedia.org/wiki/Adobe_Inc.",
+        tags = listOf("white A", "red square", "sharp triangle", "geometric", "design software", "creative")
+    ),
+    Symbol(
+        name = "Dropbox",
+        category = "Logos",
+        description = "An open blue box composed of four rhombus shapes.",
+        history = "Symbolizes storage, openness, and simplicity.",
+        url = "https://en.wikipedia.org/wiki/Dropbox_(service)",
+        tags = listOf("blue box", "rhombus shapes", "open cube", "4 diamonds", "cloud storage", "tech logo")
+    ), Symbol(
+        name = "Coca-Cola",
+        category = "Logos",
+        description = "A flowing, Spencerian script wordmark in red, conveying classic elegance.",
+        history = "Designed in 1885 by Frank Mason Robinson, the logo's cursive script has become synonymous with the brand's rich history and global presence.",
+        url = "https://en.wikipedia.org/wiki/Coca-Cola",
+        tags = listOf("red cursive text", "Spencerian script", "flowing letters", "classic design", "beverage brand")
+    ),
+    Symbol(
+        name = "Adidas",
+        category = "Logos",
+        description = "Three parallel diagonal stripes, often forming a triangle, symbolizing performance.",
+        history = "Introduced in 1972, the 'Three Stripes' represent the company's focus on diversity, mountain-like challenges, and the appeal of athleticism.",
+        url = "https://en.wikipedia.org/wiki/Adidas",
+        tags = listOf("three diagonal stripes", "triangle formation", "black and white", "sportswear", "athletic brand")
+    ),
+    Symbol(
+        name = "Shell",
+        category = "Logos",
+        description = "A stylized yellow scallop shell with a red outline, representing energy and movement.",
+        history = "The pecten shell emblem has been in use since 1904, symbolizing the company's maritime heritage and its commitment to exploration.",
+        url = "https://en.wikipedia.org/wiki/Shell_(company)",
+        tags = listOf("yellow shell", "red outline", "scallop shape", "energy sector", "oil and gas")
+    ),
+    Symbol(
+        name = "IBM",
+        category = "Logos",
+        description = "A blue wordmark with horizontal stripes cutting through the letters, symbolizing speed and dynamism.",
+        history = "Designed by Paul Rand in 1972, the striped logo represents the company's progressive approach and technological innovation.",
+        url = "https://en.wikipedia.org/wiki/IBM",
+        tags = listOf("blue text", "horizontal stripes", "bold letters", "technology", "computing")
+    ),
+    Symbol(
+        name = "Volkswagen",
+        category = "Logos",
+        description = "A circle enclosing a 'V' stacked above a 'W', representing the brand's initials.",
+        history = "The interlocking letters within a circle have been the hallmark of Volkswagen since 1937, symbolizing unity and precision.",
+        url = "https://en.wikipedia.org/wiki/Volkswagen",
+        tags = listOf("circle with VW", "interlocking letters", "blue and silver", "automotive", "German engineering")
+    ),
+    Symbol(
+        name = "FedEx",
+        category = "Logos",
+        description = "A purple and orange wordmark with a hidden arrow between the 'E' and 'x', symbolizing speed and precision.",
+        history = "Designed in 1994 by Lindon Leader, the hidden arrow represents the company's forward-thinking and dynamic services.",
+        url = "https://en.wikipedia.org/wiki/FedEx",
+        tags = listOf("wordmark", "hidden arrow", "negative space", "purple and orange", "shipping logo")
+    ),
+    Symbol(
+        name = "Toyota",
+        category = "Logos",
+        description = "Three overlapping ovals forming a symmetrical abstract 'T', representing the unification of the hearts of customers and the company's products.",
+        history = "Introduced in 1989, the logo symbolizes the company's commitment to satisfaction and the global expansion of its technology.",
+        url = "https://en.wikipedia.org/wiki/Toyota",
+        tags = listOf("three ovals", "interlocking loops", "horizontal and vertical", "abstract T", "chrome emblem", "car brand")
+    ),
+    Symbol(
+        name = "BMW",
+        category = "Logos",
+        description = "A circle divided into alternating blue and white quadrants, surrounded by a black ring, representing a spinning propeller and the colors of the Bavarian flag.",
+        history = "Originates from the company's aviation history and its Bavarian roots.",
+        url = "https://en.wikipedia.org/wiki/BMW",
+        tags = listOf("circle logo", "blue and white quarters", "propeller", "black outer ring", "luxury car", "German brand")
+    ),
+    Symbol(
+        name = "Mercedes-Benz",
+        category = "Logos",
+        description = "A three-pointed silver star enclosed in a circle, symbolizing the company's ambition to dominate land, sea, and air transportation.",
+        history = "Adopted in 1926, the logo represents the brand's engineering prowess across all terrains.",
+        url = "https://en.wikipedia.org/wiki/Mercedes-Benz",
+        tags = listOf("three-point star", "thin circle", "metallic silver", "minimalist", "automotive", "luxury")
+    ),
+    Symbol(
+        name = "Pepsi",
+        category = "Logos",
+        description = "A circle with red, white, and blue swirling wave patterns, representing the brand's global appeal and dynamic nature.",
+        history = "The modern version was introduced in 2008, symbolizing global movement and refreshment.",
+        url = "https://en.wikipedia.org/wiki/Pepsi",
+        tags = listOf("color swirl", "red top", "white wave", "blue bottom", "circular logo", "soft drink", "beverage brand")
+    ),
+    Symbol(
+        name = "Chanel",
+        category = "Logos",
+        description = "Two interlocking, mirrored letter 'C's forming a symmetrical emblem.",
+        history = "Designed by Coco Chanel herself in 1925, the logo represents the designer's name and has become an enduring symbol of luxury and elegance.",
+        url = "https://en.wikipedia.org/wiki/Chanel",
+        tags = listOf("interlocking Cs", "black and white", "symmetrical design", "fashion brand", "luxury")
+    ),
+    Symbol(
+        name = "Lego",
+        category = "Logos",
+        description = "Bold, white uppercase letters spelling 'LEGO' on a red square background.",
+        history = "The logo has evolved since the company's founding in 1932, with the current design introduced in 1998 to reflect the brand's playful and creative spirit.",
+        url = "https://en.wikipedia.org/wiki/Lego",
+        tags = listOf("white text", "red background", "blocky font", "toy brand", "playfulness")
+    ),
+    Symbol(
+        name = "Hyundai",
+        category = "Logos",
+        description = "A stylized, slanted letter 'H' enclosed in an oval, symbolizing a handshake.",
+        history = "Introduced in 1991, the logo represents trust and satisfaction between the company and its customers.",
+        url = "https://en.wikipedia.org/wiki/Hyundai",
+        tags = listOf("slanted H", "oval enclosure", "silver color", "automotive", "trust")
+    ),
+    Symbol(
+        name = "Philips",
+        category = "Logos",
+        description = "A shield containing a wave pattern and four stars, symbolizing innovation and quality.",
+        history = "The emblem has been in use since 1938, reflecting the company's commitment to excellence in electronics.",
+        url = "https://en.wikipedia.org/wiki/Philips",
+        tags = listOf("shield shape", "wave pattern", "four stars", "blue and white", "electronics")
+    ),
+    Symbol(
+        name = "Dell",
+        category = "Logos",
+        description = "The company name 'DELL' in uppercase letters with a slanted 'E', representing innovation.",
+        history = "The slanted 'E' was introduced in 1989 to signify the company's forward-thinking approach.",
+        url = "https://en.wikipedia.org/wiki/Dell",
+        tags = listOf("uppercase text", "slanted E", "blue color", "technology", "innovation")
+    ),
+    Symbol(
+        name = "Nivea",
+        category = "Logos",
+        description = "White uppercase letters spelling 'NIVEA' on a deep blue circular background.",
+        history = "The logo has maintained its classic design since 1925, symbolizing purity and reliability in skincare.",
+        url = "https://en.wikipedia.org/wiki/Nivea",
+        tags = listOf("white text", "blue circle", "simple design", "skincare", "purity")
+    ),
+    Symbol(
+        name = "Allianz",
+        category = "Logos",
+        description = "The company name 'Allianz' accompanied by three vertical bars forming a stylized 'A'.",
+        history = "The three bars, introduced in 1977, represent the company's core values of integrity, innovation, and excellence.",
+        url = "https://en.wikipedia.org/wiki/Allianz",
+        tags = listOf("blue text", "three bars", "stylized A", "insurance", "finance")
+    ),
+    Symbol(
+        name = "Kellogg's",
+        category = "Logos",
+        description = "A red, cursive wordmark spelling 'Kellogg's', conveying tradition and quality.",
+        history = "The signature-style logo has been in use since 1906, reflecting the personal touch of the company's founder, W.K. Kellogg.",
+        url = "https://en.wikipedia.org/wiki/Kellogg's",
+        tags = listOf("red cursive text", "signature style", "food brand", "breakfast cereals")
+    ),
+    Symbol(
+        name = "John Deere",
+        category = "Logos",
+        description = "A leaping deer silhouette enclosed in a green and yellow shield.",
+        history = "The logo, depicting a deer since 1876, symbolizes agility and the company's agricultural heritage.",
+        url = "https://en.wikipedia.org/wiki/John_Deere",
+        tags = listOf("leaping deer", "green and yellow", "shield shape", "agriculture", "machinery")
+    ),
+    Symbol(
+        name = "Huawei",
+        category = "Logos",
+        description = "A red, stylized flower with radiating petals, symbolizing innovation and growth.",
+        history = "Introduced in 1987, the logo represents the company's commitment to technological advancement.",
+        url = "https://en.wikipedia.org/wiki/Huawei",
+        tags = listOf("red flower", "radiating petals", "technology", "innovation", "telecommunications")
+    )
 )
