@@ -36,9 +36,42 @@ import androidx.compose.ui.platform.LocalContext
 import java.io.File
 import android.Manifest
 import android.provider.MediaStore
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ImageInput(navController: NavController) {
+fun ImageInputScreen(navController: NavController) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            ImageInput()
+        }
+    }
+}
+@Composable
+fun ImageInput() {
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var downloadUrl by remember { mutableStateOf<String?>(null) }
     var statusMessage by remember { mutableStateOf("No image selected") }
