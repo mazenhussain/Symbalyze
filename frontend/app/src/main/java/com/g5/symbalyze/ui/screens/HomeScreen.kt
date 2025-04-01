@@ -45,5 +45,14 @@ fun HomeScreen(navController: NavController) {
         ) {
             Text("draw", fontWeight = FontWeight.SemiBold)
         }
+        Button(
+            onClick = { navController.navigate("image") },
+            modifier = Modifier.width(150.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black
+            )
+        ) {
+            Text("input image", fontWeight = FontWeight.SemiBold)
+        }
     }
 }
