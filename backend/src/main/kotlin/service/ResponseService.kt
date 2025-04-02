@@ -7,12 +7,16 @@ import com.g5.model.Response
 class ResponseService {
     companion object {
         private const val MAX_NUM_TRIES = 3
-        private const val DEFAULT_SYMBOL = "Could not identify"
-        private const val DEFAULT_CONTEXT = "No context available"
+        private const val NO_SYMBOL = "Could not identify"
+        private const val NO_CONTEXT = "No context available"
     }
 
     private val experts: MutableList<ExpertInterface> = mutableListOf()
+    private val knowledge: MutableList<String> = mutableListOf()
+
     private var input: String = ""
+    private var imageLink: String? = null
+    private var isImage: Boolean = false
 
     fun addExpert(expert: ExpertInterface) {
         experts.add(expert)
@@ -23,18 +27,18 @@ class ResponseService {
     }
 
     fun submitPrompt(prompt: Prompt) {
-        // TODO: format prompt object into string
-
-        input = "Not implemented yet"
+        input = prompt.getInput()
+        imageLink = prompt.getImageLink()
+        isImage = imageLink != null
     }
 
     suspend fun generateResponse(): Response {
         var acceptable: Boolean = false
-        var finalId: String = DEFAULT_SYMBOL
+        var finalId: String = NO_SYMBOL
         var tries: Int = 0
 
         while (!acceptable && tries < MAX_NUM_TRIES) {
-            val newId: String = useExperts(input)
+            val newId: String = useExperts(generateExpertInput())
             acceptable = isSatisfactory(newId)
 
             if (acceptable) {
@@ -42,22 +46,36 @@ class ResponseService {
                 break
             } else {
                 tries += 1
-                //updateExperts(newId)
+                knowledge.add(newId)
             }
         }
 
         val formattedResponse: Response = Response()
         formattedResponse.setSymbol(finalId)
-        if (finalId != DEFAULT_SYMBOL) formattedResponse.setContext(contextFor(finalId))
+        if (finalId != NO_SYMBOL) formattedResponse.setContext(contextFor(finalId))
 
         return formattedResponse
     }
 
+    private fun generateExpertInput(): String {
+        if (knowledge.isEmpty()) {
+            if (isImage) {
+                return "Identify the symbol in the linked image: " + imageLink
+            }
+            return input
+        } else {
+            if (isImage) {
+                return "Identify the symbol in the linked image: " + imageLink + ". Additional background information: " + knowledge.joinToString(",")
+            }
+            return "Identify the symbol given: " + input + ". Additional background information: " + knowledge.joinToString(",")
+        }
+    }
+    
     private suspend fun useExperts(input: String): String {
         val expertRes: MutableList<String> = mutableListOf()
 
         for (expert in experts) {
-            val res: String? = expert.generateResponse(input) // Unsure
+            val res: String? = expert.generateResponse(input, isImage)
             res?.let { expertRes.add(it) }
         }
 
@@ -65,35 +83,62 @@ class ResponseService {
     }
 
     private fun mergeResponses(responses: List<String>): String {
-        if (responses.isEmpty()) return DEFAULT_SYMBOL
+        if (responses.isEmpty()) return NO_SYMBOL
 
-        val phraseCounts = mutableMapOf<String, Int>()
+        val stopWords = setOf("the", "a", "an", "of", "in", "to", "for", "on", "at", "by", "with", "about") 
+        val wordCounts = mutableMapOf<String, Int>()
+        val groupedResponses = mutableMapOf<Set<String>, MutableList<String>>()
 
         for (response in responses) {
-            val normalizedResponse = response.trim().lowercase()
-            phraseCounts[normalizedResponse] = phraseCounts.getOrDefault(normalizedResponse, 0) + 1
+            val words = response.lowercase()
+                .split(Regex("\\W+"))
+                .filter { it.isNotBlank() && it !in stopWords }
+                .toSet()
+
+            for (word in words) {
+                wordCounts[word] = wordCounts.getOrDefault(word, 0) + 1
+            }
+
+            groupedResponses.computeIfAbsent(words) { mutableListOf() }.add(response)
         }
 
-        return phraseCounts.entries
+        val sortedWords = wordCounts.entries
             .sortedByDescending { it.value }
-            .joinToString(", ") { it.key }
+            .map { it.key }
+
+        val mergedResponses = groupedResponses.entries.map { (wordSet, phrases) ->
+            val mostFrequentWords = wordSet.filter { it in sortedWords.take(5) }
+            val summary = mostFrequentWords.joinToString(" ") { it }
+            "${phrases.distinct().joinToString(" / ")}"
+        }
+
+        return mergedResponses.joinToString("; ")
     }
 
     private fun isSatisfactory(response: String): Boolean {
-        // criteria here is that we have converged on a singular phrase
-        val phrases = response.split(", ").map { it.trim() }.toSet()
-        return phrases.size == 1
+        val phrases = response.split("; ").map { it.trim() }
+        if (phrases.size == 1) return true
+
+        val phraseCounts = mutableMapOf<String, Int>()
+        val totalResponses = phrases.size
+
+        for (phrase in phrases) {
+            val words = phrase.split(Regex("\\W+")).map { it.trim().lowercase() }
+            for (word in words) {
+                phraseCounts[word] = phraseCounts.getOrDefault(word, 0) + 1
+            }
+        }
+
+        val maxFrequency = phraseCounts.values.maxOrNull() ?: 0
+        val agreementRatio = maxFrequency.toDouble() / totalResponses
+
+        return agreementRatio >= 0.7
     }
 
-//    private suspend fun updateExperts(knowledge: String) {
-//        for (expert in experts) {
-//            expert.updateKnowledge(knowledge)
-//        }
-//    }
 
     private suspend fun contextFor(symbol: String): String {
-        val expert = experts.firstOrNull() ?: return DEFAULT_CONTEXT
-        val knowledge = "Ignore everything else. Please concisely describe background context for: $symbol" // DISCUSS: should we have a "clearKnowledge" method added to expert interface?
-        return expert.generateResponse(knowledge) ?: DEFAULT_CONTEXT // Unsure
+        val expert = experts.firstOrNull() ?: return NO_CONTEXT
+        val knowledge = "Please concisely describe background context for: $symbol"
+        return expert.generateResponse(knowledge) ?: NO_CONTEXT
     }
 }
