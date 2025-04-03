@@ -1,4 +1,4 @@
-package service
+package model
 
 import com.g5.model.ExpertInterface
 import com.g5.model.KeywordExpert

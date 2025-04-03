@@ -38,13 +38,6 @@ class KeywordExpert : ExpertInterface {
     }
 
     private fun bestSymbolKeywordMatch(input: String, symbols: List<Symbol>) : Symbol? {
-        val inputAdjusted: List<String> = input.lowercase().split(" ", "-", "_", ",")
-//        symbols.forEach { symbol ->
-//            val score = symbol.tags.count { tag ->
-//                inputAdjusted.any { word -> tag.lowercase().contains(word) }
-//            }
-//            println("🔍 Symbol: ${symbol.name}, Score: $score")
-//        }
         return symbols.maxByOrNull { symbol ->
             symbol.tags.sumOf { tag ->
                 tag.lowercase().split(" ", "-", "_", ",")
@@ -52,11 +45,11 @@ class KeywordExpert : ExpertInterface {
                         setOf("a", "an", "and", "the", "of", "on",
                         "in", "at", "for", "with", "to", "from", "by")}
                     .count { subtag ->
-                        inputAdjusted.any { word -> subtag == word }
+                        input.lowercase().split(" ", "-", "_", ",")
+                            .any { word -> subtag == word }
                     }
             }
         }
-
     }
 
 }
