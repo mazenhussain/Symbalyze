@@ -52,7 +52,6 @@ class KeywordExpert : ExpertInterface {
                         input.lowercase().split(" ", "-", "_", ",")
                             .any { word ->
                                 subtag == word
-                                    .filter { setOf(' ', '-', '_', ',', '*').contains(it) }
                             }
                     }
             }
