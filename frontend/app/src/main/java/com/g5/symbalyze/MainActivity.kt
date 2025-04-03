@@ -42,6 +42,5 @@ fun AppNavigation() {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { HomeScreen(navController) }
         composable("draw") { DrawInputScreen(navController) }
-        composable("results") { ResultsDisplayScreen(navController) }
     }
 }

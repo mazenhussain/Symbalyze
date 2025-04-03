@@ -65,21 +65,11 @@ fun ResultsDisplayScreen(navController: NavController) {
 @Composable
 fun ResultsDisplay() {
     val lines = remember { mutableStateListOf<Line>() }
+    val result = "Symbol"
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "here is what we found!",
-            style = TextStyle(
-                fontSize = 28.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.SemiBold
-            ), modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .offset(y = 48.dp)
-        )
-
-        Text(
-            text = "Keyword Matching Expert: ",
+            text = "here is what our 3 experts found!",
             style = TextStyle(
                 fontSize = 28.sp,
                 color = Color.Black,
@@ -89,17 +79,7 @@ fun ResultsDisplay() {
                 .offset(y = 48.dp)
         )
         Text(
-            text = "ML Expert:",
-            style = TextStyle(
-                fontSize = 28.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.SemiBold
-            ), modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .offset(y = 48.dp)
-        )
-        Text(
-            text = "Web-scraping Expert: ",
+            text = result,
             style = TextStyle(
                 fontSize = 28.sp,
                 color = Color.Black,
