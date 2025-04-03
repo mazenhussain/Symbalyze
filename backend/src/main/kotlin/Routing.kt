@@ -1,10 +1,7 @@
 package com.g5
 
-<<<<<<< HEAD
 import com.g5.model.KeywordExpert
-=======
 import io.ktor.http.*
->>>>>>> main
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.request.*

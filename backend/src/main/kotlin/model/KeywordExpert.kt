@@ -10,7 +10,7 @@ import java.io.FileInputStream
 
 class KeywordExpert : ExpertInterface {
 
-    override suspend fun generateResponse(input: String): String? {
+    override suspend fun generateResponse(input: String, isImage: Boolean?): String? {
         initFirebase()
         val symbols = getStoredSymbols()
         val result: Symbol? = bestSymbolKeywordMatch(input, symbols)

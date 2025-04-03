@@ -59,10 +59,6 @@ class ResponseServiceTest {
     @Test
     fun `generateResponse should acquire context for final response`() = runBlocking {
         coEvery { expert1.generateResponse(any()) } returns "Nike" andThen "Some facts about Nike"
-<<<<<<< HEAD
-
-=======
->>>>>>> main
         coEvery { expert2.generateResponse(any()) } returns "Nike"
 
         responseService.addExpert(expert1)  
