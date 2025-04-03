@@ -89,9 +89,14 @@ class KeywordExpertTest {
     }
 
     @Test
-    fun `Should return Christian Cross based on user description`() = runBlocking {
+    fun `Should return Cross of Lorraine based on user description`() = runBlocking {
         val result = expert.generateResponse("French Cross with a longer vertical line")
         assertEquals("Cross of Lorraine", result)
     }
 
+    @Test
+    fun `Should return Christian Cross based on user image`() = runBlocking {
+        val result = expert.generateResponse("https://i.imgur.com/YFWdUHF.png", true)
+        assertEquals("Christian Cross", result)
+    }
 }
