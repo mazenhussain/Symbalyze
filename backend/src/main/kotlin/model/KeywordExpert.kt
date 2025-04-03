@@ -1,5 +1,6 @@
 package com.g5.model
 
+import com.g5.service.GeminiService
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.firestore.Firestore
 import com.google.firebase.FirebaseApp
@@ -13,7 +14,10 @@ class KeywordExpert : ExpertInterface {
     override suspend fun generateResponse(input: String, isImage: Boolean?): String? {
         initFirebase()
         val symbols = getStoredSymbols()
-        val result: Symbol? = bestSymbolKeywordMatch(input, symbols)
+        val description = if(isImage == false) input
+            else GeminiService().askGemini("Use five word visual description of the image in the link: ", input)
+        println(description)
+        val result: Symbol? = bestSymbolKeywordMatch(description, symbols)
         return result?.name
     }
 

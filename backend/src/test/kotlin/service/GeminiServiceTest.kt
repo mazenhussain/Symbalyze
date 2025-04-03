@@ -8,7 +8,7 @@ import org.junit.Test
 
 class GeminiServiceTest {
     private lateinit var geminiService: GeminiService
-    private final val TEST_INPUT: String = "Tell me about Gemini."
+    private final val TEST_INPUT: String = "Tell me about the Gemini AI Model."
 
     @Before
     fun setUp() {
@@ -19,6 +19,6 @@ class GeminiServiceTest {
     fun `Response from API is successful`() = runBlocking {
         val response = geminiService.askGemini(TEST_INPUT)
         println("Response:" + response)
-        assertNotEquals("Request failed", response.isNotBlank())
+        assertNotEquals("Request failed", response)
     }
 }

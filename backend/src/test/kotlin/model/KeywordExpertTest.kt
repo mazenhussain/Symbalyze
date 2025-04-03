@@ -47,7 +47,7 @@ class KeywordExpertTest {
     }
 
     @Test
-    fun `Should return Peace based on user description`() = runBlocking {
+    fun `Should return Olive Branch based on user description`() = runBlocking {
         val result = expert.generateResponse("White dove with olive branch")
         assertEquals("Olive Branch", result)
     }
@@ -71,12 +71,6 @@ class KeywordExpertTest {
     }
 
     @Test
-    fun `Should return Star of David (again) based on user description`() = runBlocking {
-        val result = expert.generateResponse("A six-pointed star")
-        assertEquals("Star of David", result)
-    }
-
-    @Test
     fun `Should return Crescent and Star based on user description`() = runBlocking {
         val result = expert.generateResponse("Crescent moon with a star")
         assertEquals("Crescent and Star", result)
@@ -89,9 +83,14 @@ class KeywordExpertTest {
     }
 
     @Test
-    fun `Should return Christian Cross based on user description`() = runBlocking {
+    fun `Should return Cross of Lorraine based on user description`() = runBlocking {
         val result = expert.generateResponse("French Cross with a longer vertical line")
         assertEquals("Cross of Lorraine", result)
     }
 
+    @Test
+    fun `Should return Pepsi based on user image`() = runBlocking {
+        val result = expert.generateResponse("https://i.imgur.com/6jyhWVN.png", true)
+        assertEquals("Pepsi", result)
+    }
 }
