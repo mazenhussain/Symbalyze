@@ -50,9 +50,7 @@ class KeywordExpert : ExpertInterface {
                         "in", "at", "for", "with", "to", "from", "by")}
                     .count { subtag ->
                         input.lowercase().split(" ", "-", "_", ",")
-                            .any { word ->
-                                subtag == word
-                            }
+                            .any { word -> subtag == word }
                     }
             }
         }
