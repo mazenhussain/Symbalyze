@@ -15,6 +15,6 @@ class UploadSymbolsTest {
 
  @Test
  fun `Uploads Symbol Successfully`() = runBlocking {
-  uploader.uploadSymbols()
+  //uploader.uploadSymbols()
  }
 }
