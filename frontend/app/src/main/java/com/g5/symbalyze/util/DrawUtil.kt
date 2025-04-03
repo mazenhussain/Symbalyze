@@ -6,7 +6,7 @@ import android.util.Base64
 import java.io.ByteArrayOutputStream
 import com.g5.symbalyze.ui.screens.Line
 
-// TODO: test if this even works....
+// TODO: test if this even works.... LOLOLOLOL
 fun convertCanvasToBase64(lines: List<Line>): String {
     val screenWidth = Resources.getSystem().displayMetrics.widthPixels
     val screenHeight = Resources.getSystem().displayMetrics.heightPixels

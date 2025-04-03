@@ -30,10 +30,11 @@ fun Application.configureRouting() {
 
     routing {
         get("/") {
-            call.respondText("Hello World!")
+            call.respondText("hello from symbalyze :D")
         }
 
         post("/identify-symbol") {
+            println("received new request")
             try {
                 val requestBody = call.receive<IdentifyRequest>()
                 val processedPrompt = promptService.processPrompt(requestBody.input, requestBody.base64)
@@ -43,6 +44,7 @@ fun Application.configureRouting() {
                 
                 call.respond(mapOf("symbol" to generatedResponse.getSymbol(), "context" to generatedResponse.getContext()))
             } catch (ex: Exception) {
+                println("error processing request: " + ex)
                 call.respond(HttpStatusCode.BadRequest)
             }
         }
