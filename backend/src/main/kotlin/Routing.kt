@@ -22,7 +22,7 @@ fun Application.configureRouting() {
     val promptService = PromptService()
     val responseService = ResponseService()
 
-    // TODO: add concrete experts to responseService
+    responseService.addExpert(KeywordExpert())
 
     install(ContentNegotiation) {
         jackson()
@@ -42,6 +42,7 @@ fun Application.configureRouting() {
                 val response = responseService.submitPrompt(processedPrompt)
                 val generatedResponse = responseService.generateResponse()
                 
+                println("-------------------- returning response")
                 call.respond(mapOf("symbol" to generatedResponse.getSymbol(), "context" to generatedResponse.getContext()))
             } catch (ex: Exception) {
                 println("error processing request: " + ex)
