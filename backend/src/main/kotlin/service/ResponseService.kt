@@ -7,6 +7,7 @@ import com.g5.model.Response
 class ResponseService {
     companion object {
         private const val MAX_NUM_TRIES = 3
+        private const val NO_IMAGE_LINK = "link unavailable"
         private const val NO_SYMBOL = "Could not identify"
         private const val NO_CONTEXT = "No context available"
     }
@@ -15,7 +16,7 @@ class ResponseService {
     private val knowledge: MutableList<String> = mutableListOf()
 
     private var input: String = ""
-    private var imageLink: String? = null
+    private var imageLink: String = ""
     private var isImage: Boolean = false
 
     fun addExpert(expert: ExpertInterface) {
@@ -28,8 +29,8 @@ class ResponseService {
 
     fun submitPrompt(prompt: Prompt) {
         input = prompt.getInput()
-        imageLink = prompt.getImageLink()
-        isImage = imageLink != null
+        imageLink = prompt.getImageLink() ?: NO_IMAGE_LINK
+        isImage = imageLink != NO_IMAGE_LINK
     }
 
     suspend fun generateResponse(): Response {
@@ -59,15 +60,9 @@ class ResponseService {
 
     private fun generateExpertInput(): String {
         if (knowledge.isEmpty()) {
-            if (isImage) {
-                return "Identify the symbol in the linked image: " + imageLink
-            }
-            return input
+            return (if (isImage) (imageLink) else input)
         } else {
-            if (isImage) {
-                return "Identify the symbol in the linked image: " + imageLink + ". Additional background information: " + knowledge.joinToString(",")
-            }
-            return "Identify the symbol given: " + input + ". Additional background information: " + knowledge.joinToString(",")
+            return (if (isImage) (imageLink) else input) + ", with additional background information: " + knowledge.joinToString(",")
         }
     }
     
@@ -135,10 +130,8 @@ class ResponseService {
         return agreementRatio >= 0.7
     }
 
-
     private suspend fun contextFor(symbol: String): String {
-        val expert = experts.firstOrNull() ?: return NO_CONTEXT
-        val knowledge = "Please concisely describe background context for: $symbol"
-        return expert.generateResponse(knowledge) ?: NO_CONTEXT
+        if (symbol == NO_SYMBOL || experts.isEmpty()) return NO_CONTEXT
+        return GeminiService().askGemini("Please concisely describe background context for this symbol: $symbol") ?: NO_CONTEXT
     }
 }
