@@ -20,22 +20,20 @@ import androidx.navigation.NavController
 import androidx.compose.ui.res.*
 import androidx.compose.foundation.Image
 import com.g5.symbalyze.R
-import androidx.activity.*
 import android.content.Intent
-import androidx.activity.result.*
+import android.content.Context
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.rememberLauncherForActivityResult
 import android.net.Uri
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.google.firebase.storage.FirebaseStorage
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import java.io.File
-import android.Manifest
 import android.provider.MediaStore
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,6 +41,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.rememberCoroutineScope
+import com.g5.symbalyze.api.identifySymbol
+import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
+import android.util.Base64
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.graphics.asImageBitmap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,9 +81,11 @@ fun ImageInput() {
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var downloadUrl by remember { mutableStateOf<String?>(null) }
     var statusMessage by remember { mutableStateOf("No image selected") }
+    var base64Image by remember { mutableStateOf<String?>(null) }
 
-    val storage = FirebaseStorage.getInstance()
-    val storageRef = storage.reference
+
+
+    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
     // Gallery launcher
@@ -85,10 +93,11 @@ fun ImageInput() {
         if (result.resultCode == android.app.Activity.RESULT_OK) {
             result.data?.data?.let { uri ->
                 selectedImageUri = uri
-                uploadToFirebase(uri, storageRef, { url -> downloadUrl = url }, { msg -> statusMessage = msg })
-            } ?: run { statusMessage = "No image selected" }
+                base64Image = uriToBase64(context, uri)
+                statusMessage = "gallery image selected"
+            } ?: run { statusMessage = "no image selected" }
         } else {
-            statusMessage = "Gallery selection cancelled"
+            statusMessage = "gallery selection cancelled"
         }
     }
 
@@ -110,24 +119,11 @@ fun ImageInput() {
             }
             uri?.let {
                 selectedImageUri = it
-                uploadToFirebase(it, storageRef, { url -> downloadUrl = url }, { msg -> statusMessage = msg })
-            } ?: run { statusMessage = "Camera failed to return photo" }
+                base64Image = uriToBase64(context, uri)
+                statusMessage = "camera photo selected"
+            } ?: run { statusMessage = "camera failed to return photo" }
         } else {
-            statusMessage = "Camera capture cancelled"
-        }
-    }
-
-    // Permission launcher
-    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) {
-            try {
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                cameraLauncher.launch(intent)
-            } catch (e: Exception) {
-                statusMessage = "Camera launch failed: ${e.message}"
-            }
-        } else {
-            statusMessage = "Camera permission denied"
+            statusMessage = "camera capture cancelled"
         }
     }
 
@@ -179,39 +175,57 @@ fun ImageInput() {
                 contentDescription = "Gallery Image"
             )
         }
+        selectedImageUri?.let { uri ->
+            val bitmap = BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri))
+            bitmap?.let {
+                Image(
+                    bitmap = it.asImageBitmap(),
+                    contentDescription = "Selected Image",
+                    modifier = Modifier
+                        .size(200.dp)  // Adjust size as needed
+                        .padding(8.dp)
+                )
+            } ?: Text("Failed to load image", modifier = Modifier.padding(8.dp))
+        }
         Text(text = statusMessage, modifier = Modifier.padding(8.dp))
         downloadUrl?.let { url ->
             Text(text = "Download URL: $url", modifier = Modifier.padding(8.dp))
         }
+        Button(
+            onClick = {
+                coroutineScope.launch {
+                    Log.d("debug", "base64: $base64Image")
+                    val res = identifySymbol(inputImgBase64 = base64Image)
+                    Log.d("debug", res.toString())
+                    // TODO: navController.navigate("result") with the response body somehow
+                }
+            },
+            modifier = Modifier.width(150.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black
+            )
+        ) {
+            Text("submit", fontWeight = FontWeight.SemiBold)
+        }
     }
 }
 
-fun uploadToFirebase(
-    uri: Uri,
-    storageRef: com.google.firebase.storage.StorageReference,
-    onSuccess: (String) -> Unit,
-    onStatusUpdate: (String) -> Unit
-) {
-    onStatusUpdate("Uploading image...")
-    val fileName = "images/${uri.lastPathSegment ?: "photo_${System.currentTimeMillis()}.jpg"}"
-    val imageRef = storageRef.child(fileName)
-
-    imageRef.putFile(uri)
-        .addOnSuccessListener {
-            onStatusUpdate("Upload successful, fetching URL...")
-            imageRef.downloadUrl
-                .addOnSuccessListener { url ->
-                    onSuccess(url.toString())
-                    onStatusUpdate("Verified URL: $url")
-                    println("Download URL: $url")
-                }
-                .addOnFailureListener { exception ->
-                    onStatusUpdate("Failed to get URL: $exception")
-                    println("Failed to get URL: $exception")
-                }
+fun uriToBase64(context: Context, uri: Uri): String? {
+    return try {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        inputStream?.use { input ->
+            val buffer = ByteArray(1024)
+            var bytesRead = 0
+            while (input.read(buffer).also { bytesRead = it } != -1) {
+                byteArrayOutputStream.write(buffer, 0, bytesRead)
+            }
         }
-        .addOnFailureListener { exception ->
-            onStatusUpdate("Upload failed: $exception")
-            println("Upload failed: $exception")
-        }
+        inputStream?.close()
+        val byteArray = byteArrayOutputStream.toByteArray()
+        Base64.encodeToString(byteArray, Base64.DEFAULT)
+    } catch (e: Exception) {
+        println("Error converting Uri to Base64: $e")
+        null
+    }
 }
