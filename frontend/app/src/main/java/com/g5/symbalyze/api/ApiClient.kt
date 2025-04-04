@@ -17,7 +17,7 @@ object UserApiClient {
 }
 
 object SymbolApiClient {
-    private const val BASE_URL = "http://172.17.103.131:8080" // NOTE: use your local ip address
+    private const val BASE_URL = "http://172.17.193.191:8080" // NOTE: use your local ip address
 
     val apiService: SymbolApiInterface by lazy {
         Retrofit.Builder()

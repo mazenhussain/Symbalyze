@@ -12,16 +12,16 @@ suspend fun identifySymbol(inputDesc: String? = null, inputImgBase64: String? = 
     )
 
     return try {
-        Log.d("debug", "calling backend with: " + formattedRequest.toString())
+        Log.d("debug", "calling backend with: $formattedRequest")
         val response = SymbolApiClient.apiService.identifySymbol(formattedRequest)
-        Log.d("debug", "response received" + response.toString())
+        Log.d("debug", "response received: $response")
         if (response.isSuccessful) {
             response.body()
         } else {
             null
         }
     } catch (e: Exception) {
-        Log.d("debug", "error accessing server: " + e.toString())
+        Log.d("debug", "error accessing server: $e")
         null
     }
 }

@@ -34,7 +34,7 @@ fun Application.configureRouting() {
         }
 
         post("/identify-symbol") {
-            println("received new request")
+            println("-------------------- received new request")
             try {
                 val requestBody = call.receive<IdentifyRequest>()
                 val processedPrompt = promptService.processPrompt(requestBody.input, requestBody.base64)

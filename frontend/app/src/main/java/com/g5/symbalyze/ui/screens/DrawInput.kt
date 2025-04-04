@@ -132,8 +132,8 @@ fun DrawInput() {
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        val base64 = convertCanvasToBase64(lines)
-                        Log.d("debug", base64)
+                        val base64 = convertCanvasToBase64(lines).getOrElse { "" }
+                        Log.d("debug", "base64: $base64")
                         val res = identifySymbol(inputImgBase64 = base64)
                         Log.d("debug", res.toString())
                         // TODO: navController.navigate("result") with the response body somehow
