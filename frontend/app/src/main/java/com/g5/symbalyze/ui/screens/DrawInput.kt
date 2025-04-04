@@ -1,5 +1,6 @@
 package com.g5.symbalyze.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.g5.symbalyze.api.identifySymbol
+import convertCanvasToBase64
+import kotlinx.coroutines.launch
 
 data class Line(
     val start: Offset,
@@ -72,6 +75,7 @@ fun DrawInputScreen(navController: NavController) {
 @Composable
 fun DrawInput() {
     val lines = remember { mutableStateListOf<Line>() }
+    val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
@@ -127,9 +131,14 @@ fun DrawInput() {
 
             Button(
                 onClick = {
-                    // val base64 = convertCanvasToBase64(lines)
-                    // val res = async { identifySymbol(inputImg = base64) }
-                    // TODO: reroute to result display UI with the response
+                    coroutineScope.launch {
+                        val base64 = convertCanvasToBase64(lines).getOrElse { "" }
+                        Log.d("debug", "base64: $base64")
+                        val res = identifySymbol(inputImgBase64 = base64)
+                        Log.d("debug", res.toString())
+                        lines.clear()
+                        // TODO: navController.navigate("result") with the response body somehow
+                    }
                 },
                 modifier = Modifier.width(150.dp),
                 colors = ButtonDefaults.buttonColors(

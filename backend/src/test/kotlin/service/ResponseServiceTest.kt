@@ -21,12 +21,7 @@ class ResponseServiceTest {
         expert1 = mockk()
         expert2 = mockk()
     }
-
-    @Test
-    fun `submitPrompt should call experts with string format of prompt`() {
-        // TODO: implement once available
-    }
-
+    
     @Test
     fun `addExpert should store experts in the list`() {
         responseService.addExpert(expert1)
@@ -37,50 +32,56 @@ class ResponseServiceTest {
 
     @Test
     fun `generateResponse should return a unanimous response`() = runBlocking {
-        coEvery { expert1.generateResponse() } returns "New Balance"
-        coEvery { expert1.updateKnowledge(any()) } just Runs
-
-        coEvery { expert2.generateResponse() } returns "New Balance"
-        coEvery { expert2.updateKnowledge(any()) } just Runs
+        coEvery { expert1.generateResponse(any()) } returns "New Balance"
+        coEvery { expert2.generateResponse(any()) } returns "New Balance"
 
         responseService.addExpert(expert1)  
         responseService.addExpert(expert2)
 
         val response = responseService.generateResponse()
 
-        assertEquals("new balance", response.getSymbol())
+        assertEquals("New Balance", response.getSymbol())
     }
 
     @Test
     fun `generateResponse should only try a maximum of 3 times`() = runBlocking {
-        coEvery { expert1.generateResponse() } returns "Nike"
-        coEvery { expert1.updateKnowledge(any()) } just Runs
-
-        coEvery { expert2.generateResponse() } returns "Adidas"
-        coEvery { expert2.updateKnowledge(any()) } just Runs
+        coEvery { expert1.generateResponse(any()) } returns "Nike"
+        coEvery { expert2.generateResponse(any()) } returns "Adidas"
 
         responseService.addExpert(expert1)  
         responseService.addExpert(expert2) 
 
         val response = responseService.generateResponse()
 
-        coVerify(exactly = 3) { expert1.generateResponse() }
-        coVerify(exactly = 3) { expert1.updateKnowledge(any()) }
+        coVerify(exactly = 3) { expert1.generateResponse(any()) }
     }
 
     @Test
     fun `generateResponse should acquire context for final response`() = runBlocking {
-        coEvery { expert1.generateResponse() } returns "Nike" andThen "Some facts about Nike"
-        coEvery { expert1.updateKnowledge(any()) } just Runs
+        coEvery { expert1.generateResponse(any()) } returns "Nike"
+        coEvery { expert2.generateResponse(any()) } returns "Nike"
+    
+        responseService.addExpert(expert1)  
+        responseService.addExpert(expert2)
 
-        coEvery { expert2.generateResponse() } returns "Nike"
-        coEvery { expert2.updateKnowledge(any()) } just Runs
+        val response = responseService.generateResponse()
+
+        assertNotEquals("No context available", response.getContext())
+    }
+
+    @Test
+    fun `generateResponse should re-call experts with updated knowledge`() = runBlocking {
+        coEvery { expert1.generateResponse(any()) } returns "Nike"
+        coEvery { expert2.generateResponse(any()) } returns "Adidas" andThen "Nike"
 
         responseService.addExpert(expert1)  
         responseService.addExpert(expert2)
 
         val response = responseService.generateResponse()
 
-        assertEquals("Some facts about Nike", response.getContext())
+        coVerifyOrder {
+            expert1.generateResponse("")
+            expert1.generateResponse(match { it.contains("background information") })
+        }
     }
 }

@@ -15,34 +15,34 @@ data class Symbol(
     val url: String,
     val tags: List<String>
 )
+class UploadSymbols {
+    private fun initFirebase() {
+        val serviceAccount = FileInputStream("src/main/resources/firebase-admin.json")
+        val options = FirebaseOptions.builder()
+            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+            .build()
+        FirebaseApp.initializeApp(options)
+        println("✅ Firebase initialized.")
+    }
 
-fun initFirebase() {
-    val serviceAccount = FileInputStream("src/main/resources/firebase-admin.json")
-    val options = FirebaseOptions.builder()
-        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-        .build()
-    FirebaseApp.initializeApp(options)
-    println("✅ Firebase initialized.")
-}
-
-fun uploadSymbols(symbols: List<Symbol>) {
-    val db: Firestore = FirestoreClient.getFirestore()
-    symbols.forEach { symbol ->
-        try {
-            val result = db.collection("symbols").document(symbol.name).set(symbol).get()
-            println("✅ Uploaded symbol: ${symbol.name}")
-        } catch (e: Exception) {
-            println("❌ Failed to upload ${symbol.name}: ${e.message}")
+    private fun uploadSymbols(symbols: List<Symbol>) {
+        val db: Firestore = FirestoreClient.getFirestore()
+        symbols.forEach { symbol ->
+            try {
+                val result = db.collection("symbols").document(symbol.name).set(symbol).get()
+                println("✅ Uploaded symbol: ${symbol.name}")
+            } catch (e: Exception) {
+                println("❌ Failed to upload ${symbol.name}: ${e.message}")
+            }
         }
     }
-}
 
-fun main() {
-    initFirebase()
-    uploadSymbols(symbols)
-    println("☑\uFE0F Completed Upload Procedure ☑\uFE0F")
+    fun uploadSymbols() {
+        initFirebase()
+        uploadSymbols(symbols)
+        println("☑\uFE0F Completed Upload Procedure ☑\uFE0F")
+    }
 }
-
 val symbols = listOf(
     Symbol( // Religious Symbols
         name = "Christian Cross",
@@ -58,7 +58,7 @@ val symbols = listOf(
         description = "A fish symbol used by early Christians to identify themselves.",
         history = "The Ichthys symbol dates back to the 2nd century AD and was used during times of persecution.",
         url = "https://en.wikipedia.org/wiki/Ichthys",
-        tags = listOf("simple outline of a fish", "Christianity", "early Christian symbol", "secret identification")
+        tags = listOf("fish", "Christianity", "early Christian symbol", "secret identification")
     ),
     Symbol(
         name = "Star of David",
@@ -259,14 +259,6 @@ val symbols = listOf(
         history = "Worn as an amulet for protection and strength in Viking-era Scandinavia.",
         url = "https://en.wikipedia.org/wiki/Mj%C3%B6lnir",
         tags = listOf("hammer shape", "Norse mythology", "Viking", "protection", "thunder god", "runic carvings")
-    ),
-    Symbol(
-        name = "Hexagram",
-        category = "Occult / Kabbalah / Christianity / Hinduism",
-        description = "A six-pointed star symbol used in many religious traditions with different meanings.",
-        history = "Found in Kabbalistic, Christian, Hindu, and occult symbolism, often misunderstood or confused with the Star of David.",
-        url = "https://en.wikipedia.org/wiki/Hexagram",
-        tags = listOf("two interlocked triangles", "six-pointed star", "magic", "Kabbalah", "spiritual balance", "esoteric")
     ),
     Symbol(
         name = "Cross of Lorraine",
@@ -2307,6 +2299,14 @@ val symbols = listOf(
         history = "Used to represent professionalism and networking.",
         url = "https://en.wikipedia.org/wiki/LinkedIn",
         tags = listOf("blue square", "white letters", "'in' text", "minimal logo", "professional network")
+    ),
+    Symbol(
+        name = "Twitter Bird",
+        category = "Logos",
+        description = "A light blue silhouette of a bird in mid-flight, wings extended upward.",
+        history = "Adopted in 2012; represents freedom, hope, and limitless possibility.",
+        url = "https://en.wikipedia.org/wiki/Twitter",
+        tags = listOf("blue bird", "flying bird", "social media logo", "tweet", "communication")
     ),
     Symbol(
         name = "Twitter (X)",

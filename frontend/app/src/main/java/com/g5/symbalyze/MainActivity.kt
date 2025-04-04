@@ -13,9 +13,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.g5.symbalyze.ui.screens.DrawInputScreen
-import com.g5.symbalyze.ui.screens.ImageInputScreen
+import com.g5.symbalyze.ui.screens.TypeInputScreen
 import com.g5.symbalyze.ui.screens.HomeScreen
-import com.g5.symbalyze.ui.screens.ImageInput
 import com.g5.symbalyze.ui.theme.SymbalyzeTheme
 
 // main navigation
@@ -43,6 +42,6 @@ fun AppNavigation() {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { HomeScreen(navController) }
         composable("draw") { DrawInputScreen(navController) }
-        composable("image") { ImageInputScreen(navController) }
+        composable("type") { TypeInputScreen(navController) }
     }
 }
