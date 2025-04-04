@@ -1,6 +1,7 @@
 package com.g5.symbalyze.model
 
+// this MUST match the backend, down to the type!
 data class SymbolRequest(
-    val description: String?,
-    val imageBase64: String?
+    val input: String?,
+    val base64: String?
 )
