@@ -132,6 +132,7 @@ class ResponseService {
 
     private suspend fun contextFor(symbol: String): String {
         if (symbol == NO_SYMBOL || experts.isEmpty()) return NO_CONTEXT
+        // TODO: users of gemini should not be instantiating by themselves, ideally have one instance shared across all
         return GeminiService().askGemini("Please concisely describe background context for this symbol: $symbol") ?: NO_CONTEXT
     }
 }

@@ -1,7 +1,7 @@
-package model
+package service
 
 import com.g5.model.ExpertInterface
-import com.g5.model.KeywordExpert
+import com.g5.service.KeywordExpert
 import kotlinx.coroutines.runBlocking
 
 import org.junit.Assert.*

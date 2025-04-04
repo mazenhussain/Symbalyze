@@ -1,5 +1,7 @@
-package com.g5.model
+package com.g5.service
 
+import com.g5.model.ExpertInterface
+import com.g5.model.Symbol
 import com.g5.service.GeminiService
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.firestore.Firestore

@@ -1,6 +1,5 @@
 package com.g5
 
-import com.g5.model.KeywordExpert
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -17,6 +16,7 @@ import com.g5.model.Response
 
 import com.g5.service.ResponseService
 import com.g5.service.PromptService
+import com.g5.service.KeywordExpert
 
 fun Application.configureRouting() {
     val promptService = PromptService()
