@@ -136,6 +136,7 @@ fun DrawInput() {
                         Log.d("debug", "base64: $base64")
                         val res = identifySymbol(inputImgBase64 = base64)
                         Log.d("debug", res.toString())
+                        lines.clear()
                         // TODO: navController.navigate("result") with the response body somehow
                     }
                 },

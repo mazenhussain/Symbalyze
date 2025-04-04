@@ -1,5 +1,6 @@
 package com.g5.symbalyze.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.g5.symbalyze.api.identifySymbol
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,13 +59,16 @@ fun TypeInputScreen(navController: NavController) {
 @Composable
 fun TypeInput() {
     var userInput by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
     val maxlen = 200
 
     Text(
-        text = "What does the symbol look like?",
+        text = "describe the symbol...",
         fontSize = 24.sp,
         fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.padding(bottom = 12.dp).padding(horizontal = 24.dp)
+        modifier = Modifier
+            .padding(bottom = 12.dp)
+            .padding(horizontal = 24.dp)
     )
 
     androidx.compose.material3.OutlinedTextField(
@@ -100,9 +106,17 @@ fun TypeInput() {
     ) {
         Button(
             onClick = {
-                // TODO: reroute to result display UI with the response
+                coroutineScope.launch {
+                    Log.d("debug", userInput)
+                    val res = identifySymbol(inputDesc = userInput)
+                    Log.d("debug", res.toString())
+                    userInput = ""
+                    // TODO: navController.navigate("result") with the response body somehow
+                }
             },
-            modifier = Modifier.weight(1f).padding(horizontal = 24.dp),
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 24.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black
             )
