@@ -2,7 +2,7 @@ Web Expert Usage
 
 Important Information 
 - The backend server is seperate from the backend server of android studio, since it uses python and android studio isnt optimized for it
-- The backend server needs to be run on whichever IDE you choose 
+- The backend server can be run on any IDE you choose (preferably VS code)
 
 To Run
 - Download Dependencies, pip install (if needed, pip install fastapi uvicorn google-generativeai pillow requests)
