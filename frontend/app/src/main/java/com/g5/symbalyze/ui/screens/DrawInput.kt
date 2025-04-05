@@ -143,7 +143,8 @@ fun DrawInput() {
                 modifier = Modifier.width(150.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black
-                )
+                ),
+                enabled = lines.isNotEmpty()
             ) {
                 Text("submit", fontWeight = FontWeight.SemiBold)
             }

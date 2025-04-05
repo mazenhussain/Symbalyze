@@ -204,7 +204,8 @@ fun ImageInput() {
             modifier = Modifier.width(150.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black
-            )
+            ),
+            enabled = !base64Image.isNullOrBlank()
         ) {
             Text("submit", fontWeight = FontWeight.SemiBold)
         }

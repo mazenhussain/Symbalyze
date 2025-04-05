@@ -119,7 +119,8 @@ fun TypeInput() {
                 .padding(horizontal = 24.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black
-            )
+            ),
+            enabled = userInput.isNotBlank()
         ) {
             Text("submit", fontWeight = FontWeight.SemiBold)
         }
