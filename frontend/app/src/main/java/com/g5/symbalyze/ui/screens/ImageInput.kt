@@ -49,6 +49,7 @@ import android.util.Base64
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.graphics.asImageBitmap
+import convertUriToBase64
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,10 +81,8 @@ fun ImageInputScreen(navController: NavController) {
 fun ImageInput() {
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var downloadUrl by remember { mutableStateOf<String?>(null) }
-    var statusMessage by remember { mutableStateOf("No image selected") }
+    var statusMessage by remember { mutableStateOf("no image selected") }
     var base64Image by remember { mutableStateOf<String?>(null) }
-
-
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -93,7 +92,7 @@ fun ImageInput() {
         if (result.resultCode == android.app.Activity.RESULT_OK) {
             result.data?.data?.let { uri ->
                 selectedImageUri = uri
-                base64Image = uriToBase64(context, uri)
+                base64Image = convertUriToBase64(context, uri)
                 statusMessage = "gallery image selected"
             } ?: run { statusMessage = "no image selected" }
         } else {
@@ -119,7 +118,7 @@ fun ImageInput() {
             }
             uri?.let {
                 selectedImageUri = it
-                base64Image = uriToBase64(context, uri)
+                base64Image = convertUriToBase64(context, uri)
                 statusMessage = "camera photo selected"
             } ?: run { statusMessage = "camera failed to return photo" }
         } else {
@@ -134,7 +133,7 @@ fun ImageInput() {
     ) {
         // header
         Text(
-            "pick your method!",
+            "take or upload a picture!",
             fontSize = 28.sp,
             color = Color.Black,
             fontWeight = FontWeight.SemiBold
@@ -155,7 +154,8 @@ fun ImageInput() {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.camera),
-                contentDescription = "Camera Image"
+                contentDescription = "Camera Image",
+                modifier = Modifier.size(40.dp)
             )
         }
         Button(
@@ -172,7 +172,8 @@ fun ImageInput() {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.gallery),
-                contentDescription = "Gallery Image"
+                contentDescription = "Gallery Image",
+                modifier = Modifier.size(40.dp)
             )
         }
         selectedImageUri?.let { uri ->
@@ -182,7 +183,7 @@ fun ImageInput() {
                     bitmap = it.asImageBitmap(),
                     contentDescription = "Selected Image",
                     modifier = Modifier
-                        .size(200.dp)  // Adjust size as needed
+                        .size(200.dp)
                         .padding(8.dp)
                 )
             } ?: Text("Failed to load image", modifier = Modifier.padding(8.dp))
@@ -207,25 +208,5 @@ fun ImageInput() {
         ) {
             Text("submit", fontWeight = FontWeight.SemiBold)
         }
-    }
-}
-
-fun uriToBase64(context: Context, uri: Uri): String? {
-    return try {
-        val inputStream = context.contentResolver.openInputStream(uri)
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        inputStream?.use { input ->
-            val buffer = ByteArray(1024)
-            var bytesRead = 0
-            while (input.read(buffer).also { bytesRead = it } != -1) {
-                byteArrayOutputStream.write(buffer, 0, bytesRead)
-            }
-        }
-        inputStream?.close()
-        val byteArray = byteArrayOutputStream.toByteArray()
-        Base64.encodeToString(byteArray, Base64.DEFAULT)
-    } catch (e: Exception) {
-        println("Error converting Uri to Base64: $e")
-        null
     }
 }
