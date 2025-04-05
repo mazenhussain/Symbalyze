@@ -2,38 +2,43 @@ package com.g5.model
 
 import com.g5.service.GeminiService
 import com.g5.service.PromptService
+import org.slf4j.LoggerFactory
 
 class MLExpert : ExpertInterface {
 
     private val geminiService = GeminiService()
     private val promptService = PromptService()
+    private val logger = LoggerFactory.getLogger(MLExpert::class.java)
 
     override suspend fun generateResponse(input: String, isImage: Boolean?): String? {
         return try {
-            // Ensure the input is an image
-            if (isImage != true) {
-                return "Error: This expert only works with image inputs."
+            // Validate input
+            if (input.isBlank()) {
+                return "Error: Input cannot be empty."
             }
 
-            // Validate the input URL
-            if (!isValidUrl(input)) {
-                return "Error: Invalid image URL provided."
+            // Automatically detect if the input is an image URL or a text description
+            val isImageInput = isImage ?: isValidUrl(input)
+
+            // Create a prompt based on the input type
+            val prompt = if (isImageInput) {
+                createPromptForImage(input)
+            } else {
+                createPromptForText(input)
             }
 
-            // Create a prompt for Gemini using the input image
-            val prompt = createPrompt(input)
-            println("Generated Prompt: ${prompt.getInput()} with ImageLink: ${prompt.getImageLink()}")
+            logger.info("Generated Prompt: ${prompt.getInput()} with ImageLink: ${prompt.getImageLink()}")
 
             // Use GeminiService to get a response from the Gemini API
-            val geminiResponse = geminiService.askGemini(prompt.getInput(),prompt.getImageLink())
-            println("Gemini API Response: $geminiResponse")
+            val geminiResponse = geminiService.askGemini(prompt.getInput(), prompt.getImageLink())
+            logger.info("Gemini API Response: $geminiResponse")
 
             // Extract the symbol name from the Gemini API response
             val symbolName = extractSymbolName(geminiResponse)
 
             symbolName ?: "No matching symbol found"
         } catch (e: Exception) {
-            println("Error in MLExpert: ${e.message}")
+            logger.error("Error in MLExpert: ${e.message}", e)
             "An error occurred while processing your request. Please try again later."
         }
     }
@@ -47,25 +52,37 @@ class MLExpert : ExpertInterface {
         }
     }
 
-    private fun createPrompt(imageLink: String): Prompt {
+    private fun createPromptForImage(imageLink: String): Prompt {
         return try {
-            // Create a Prompt object with both input and imageLink
-            val prompt = promptService.createPrompt(
+            promptService.createPrompt(
                 input = "Identify the name of the symbol in the image. Only return the name of the symbol and nothing else.",
                 imageLink = imageLink
             )
-            prompt
         } catch (e: Exception) {
-            println("Error creating prompt: ${e.message}")
+            logger.error("Error creating prompt for image: ${e.message}", e)
             Prompt().apply {
-                setInput("Error: Unable to create prompt.")
+                setInput("Error: Unable to create prompt for image.")
+            }
+        }
+    }
+
+    private fun createPromptForText(description: String): Prompt {
+        return try {
+            promptService.createPrompt(
+                input = "Identify the name of the symbol based on the following description: \"$description\". Only return the name of the symbol and nothing else.",
+                imageLink = null
+            )
+        } catch (e: Exception) {
+            logger.error("Error creating prompt for text: ${e.message}", e)
+            Prompt().apply {
+                setInput("Error: Unable to create prompt for text.")
             }
         }
     }
 
     private fun extractSymbolName(response: String): String? {
         if (response.isBlank()) {
-            println("Error: Empty response from Gemini API.")
+            logger.error("Error: Empty response from Gemini API.")
             return null
         }
 

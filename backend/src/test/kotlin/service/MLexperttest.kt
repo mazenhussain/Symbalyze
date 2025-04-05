@@ -18,6 +18,20 @@ class MLExpertTest {
 
         // Assert that the response is not null and contains a valid symbol name
         assertNotNull(response, "Response should not be null")
-        println("MLExpert Response: $response")
+        println("MLExpert Response for image: $response")
+    }
+
+    @Test
+    fun `test MLExpert with valid text description`() = runBlocking {
+        val mlExpert = MLExpert()
+
+        // Replace with a valid text description for testing
+        val textDescription = "A checkmark on a shoe."
+
+        val response = mlExpert.generateResponse(textDescription, isImage = false)
+
+        // Assert that the response is not null and contains a valid symbol name
+        assertNotNull(response, "Response should not be null")
+        println("MLExpert Response for text: $response")
     }
 }
