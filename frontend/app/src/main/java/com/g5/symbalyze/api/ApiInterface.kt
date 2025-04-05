@@ -9,11 +9,11 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface UserApiInterface {
-    @GET("user/save/{id}")
+    @GET("/save-symbol/{id}")
     suspend fun saveSymbol(@Path("id") symbolId: String)
 }
 
 interface SymbolApiInterface {
-    @POST("symbol/identify")
+    @POST("/identify-symbol")
     suspend fun identifySymbol(@Body symbol: SymbolRequest): Response<SymbolResponse>
 }

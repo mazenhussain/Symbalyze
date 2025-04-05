@@ -24,11 +24,11 @@ class PromptService {
         const val MEDIA_TYPE = "image/jpeg"
     }
 
-    fun processPrompt(input: String, base64: String?): Prompt {
+    fun processPrompt(input: String?, base64: String?): Prompt {
         val imageLink = base64?.let { runBlocking {
             uploadToImgur(it)
         } }
-        return createPrompt(input, imageLink)
+        return createPrompt(if (input != null) input else "no text provided", imageLink)
     }
 
     fun createPrompt(input: String, imageLink: String?): Prompt {

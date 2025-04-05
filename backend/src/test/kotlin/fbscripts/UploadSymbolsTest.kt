@@ -13,8 +13,9 @@ class UploadSymbolsTest {
   uploader = UploadSymbols()
  }
 
- @Test
- fun `Uploads Symbol Successfully`() = runBlocking {
-  uploader.uploadSymbols()
- }
+// NOTE: commenting this out otherwise we end up re-uploading every single time you run the tests!
+//  @Test
+//  fun `Uploads Symbol Successfully`() = runBlocking {
+//   uploader.uploadSymbols()
+//  }
 }
