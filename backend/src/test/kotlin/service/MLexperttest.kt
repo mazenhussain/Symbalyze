@@ -1,5 +1,6 @@
 package com.g5.model
 
+import com.g5.service.MLExpert
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
