@@ -18,6 +18,7 @@ import com.g5.service.ResponseService
 import com.g5.service.PromptService
 import com.g5.service.KeywordExpert
 import com.g5.service.MLExpert
+import com.g5.service.WebExpert
 
 fun Application.configureRouting() {
     val promptService = PromptService()
@@ -26,6 +27,7 @@ fun Application.configureRouting() {
     // the order technically matters lol since ml one is most likely to be accurate
     responseService.addExpert(MLExpert())
     responseService.addExpert(KeywordExpert())
+    responseService.addExpert(WebExpert())
 
     install(ContentNegotiation) {
         jackson()
