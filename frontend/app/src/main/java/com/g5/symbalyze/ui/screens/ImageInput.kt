@@ -48,6 +48,7 @@ import java.io.ByteArrayOutputStream
 import android.util.Base64
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.graphics.asImageBitmap
 import com.g5.symbalyze.ui.shared.GlobalState
 import convertUriToBase64
@@ -87,6 +88,7 @@ fun ImageInput(navController: NavController) {
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    var isLoading by remember { mutableStateOf(false) }
 
     // Gallery launcher
     val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -195,12 +197,14 @@ fun ImageInput(navController: NavController) {
         }
         Button(
             onClick = {
+                isLoading = true
                 coroutineScope.launch {
                     Log.d("debug", "base64: $base64Image")
                     val resp = identifySymbol(inputImgBase64 = base64Image)
                     Log.d("debug", resp.toString())
 
                     GlobalState.symbolResponse = resp
+                    isLoading = false
                     navController.navigate("result")
                 }
             },
@@ -208,9 +212,17 @@ fun ImageInput(navController: NavController) {
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black
             ),
-            enabled = !base64Image.isNullOrBlank()
+            enabled = !base64Image.isNullOrBlank() && !isLoading
         ) {
-            Text("submit", fontWeight = FontWeight.SemiBold)
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = Color.White,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text("submit", fontWeight = FontWeight.SemiBold)
+            }
         }
     }
 }

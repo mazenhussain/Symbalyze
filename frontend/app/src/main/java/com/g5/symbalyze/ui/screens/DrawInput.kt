@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -77,6 +79,7 @@ fun DrawInputScreen(navController: NavController) {
 fun DrawInput(navController: NavController) {
     val lines = remember { mutableStateListOf<Line>() }
     val coroutineScope = rememberCoroutineScope()
+    var isLoading by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
@@ -132,6 +135,7 @@ fun DrawInput(navController: NavController) {
 
             Button(
                 onClick = {
+                    isLoading = true
                     coroutineScope.launch {
                         val base64 = convertCanvasToBase64(lines).getOrElse { "" }
                         Log.d("debug", "base64: $base64")
@@ -140,6 +144,7 @@ fun DrawInput(navController: NavController) {
                         lines.clear()
 
                         GlobalState.symbolResponse = res
+                        isLoading = false
                         navController.navigate("result")
                     }
                 },
@@ -147,9 +152,17 @@ fun DrawInput(navController: NavController) {
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black
                 ),
-                enabled = lines.isNotEmpty()
+                enabled = lines.isNotEmpty() && !isLoading
             ) {
-                Text("submit", fontWeight = FontWeight.SemiBold)
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text("submit", fontWeight = FontWeight.SemiBold)
+                }
             }
         }
     }

@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -62,6 +64,7 @@ fun TypeInput(navController: NavController) {
     var userInput by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val maxlen = 200
+    var isLoading by remember { mutableStateOf(false) }
 
     Text(
         text = "describe the symbol...",
@@ -107,6 +110,7 @@ fun TypeInput(navController: NavController) {
     ) {
         Button(
             onClick = {
+                isLoading = true
                 coroutineScope.launch {
                     Log.d("debug", userInput)
                     val res = identifySymbol(inputDesc = userInput)
@@ -114,6 +118,7 @@ fun TypeInput(navController: NavController) {
                     userInput = ""
 
                     GlobalState.symbolResponse = res
+                    isLoading = false
                     navController.navigate("result")
                 }
             },
@@ -123,9 +128,17 @@ fun TypeInput(navController: NavController) {
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black
             ),
-            enabled = userInput.isNotBlank()
+            enabled = userInput.isNotBlank() && !isLoading
         ) {
-            Text("submit", fontWeight = FontWeight.SemiBold)
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = Color.White,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text("submit", fontWeight = FontWeight.SemiBold)
+            }
         }
     }
 }
