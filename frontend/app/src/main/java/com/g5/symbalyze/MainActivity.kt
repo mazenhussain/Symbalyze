@@ -12,11 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.g5.symbalyze.api.identifySymbol
+import com.g5.symbalyze.model.SymbolResponse
 import com.g5.symbalyze.ui.screens.DrawInputScreen
 import com.g5.symbalyze.ui.screens.TypeInputScreen
 import com.g5.symbalyze.ui.screens.HomeScreen
 import com.g5.symbalyze.ui.screens.*
 import com.g5.symbalyze.ui.theme.SymbalyzeTheme
+import java.util.UUID
 
 // main navigation
 class MainActivity : ComponentActivity() {
@@ -45,5 +48,6 @@ fun AppNavigation() {
         composable("draw") { DrawInputScreen(navController) }
         composable("type") { TypeInputScreen(navController) }
         composable("image") { ImageInputScreen(navController) }
+        composable("result") { ResultsDisplayScreen(navController) }
     }
 }
