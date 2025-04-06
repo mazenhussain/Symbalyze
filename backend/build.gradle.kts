@@ -42,4 +42,7 @@ dependencies {
     implementation("org.json:json:20210307")
 
     implementation("com.google.firebase:firebase-admin:9.2.0")
+
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.json:json:20231013")
 }
