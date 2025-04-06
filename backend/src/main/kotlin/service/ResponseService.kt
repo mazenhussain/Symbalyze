@@ -82,6 +82,7 @@ class ResponseService {
 
     // semantic helpers
     fun mergeSimilarResponses(strings: MutableList<String>): List<String> {
+        println(">> merging responses")
         val mergeCounts = mutableMapOf<String, Int>()
         
         val priorityQueue = PriorityQueue<String> { a, b ->
@@ -93,32 +94,44 @@ class ResponseService {
             priorityQueue.add(response)
         }
 
-        val vectors = strings.mapNotNull { phraseToVector(it) }.toMutableList()
-        var noMergesThisRound = false
+        var currentStrings = strings.toMutableList()
+        var currentVectors = currentStrings.mapNotNull { phraseToVector(it) }
 
-        while (vectors.size > 1 && !noMergesThisRound) {
-            println(">> merging responses")
-            noMergesThisRound = true
+        var changed = true
+        while (changed) {
+            changed = false
+            val newStrings = mutableListOf<String>()
+            val newVectors = mutableListOf<List<Double>>()
+            val used = BooleanArray(currentStrings.size)
 
-            for (i in vectors.indices) {
-                for (j in i + 1 until vectors.size) {
-                    if (cosineSimilarity(vectors[i], vectors[j]) >= 0.7) {
-                        val mergedString = strings[i] + " or " + strings[j]
-                        strings[i] = mergedString
-                        strings.removeAt(j)
-                        vectors[i] = phraseToVector(mergedString)!!
+            for (i in currentVectors.indices) {
+                if (used[i]) continue
+                var merged = currentStrings[i]
+                var mergedVector = currentVectors[i]
+                var mergedCount = mergeCounts[merged] ?: 0
 
-                        val newMergeCount = maxOf(mergeCounts[strings[i]] ?: 0, mergeCounts[strings[j]] ?: 0) + 1
-                        mergeCounts[mergedString] = newMergeCount
-                        priorityQueue.add(mergedString)
-
-                        vectors.removeAt(j)
-                        noMergesThisRound = false
-                        break
+                for (j in i + 1 until currentVectors.size) {
+                    if (used[j]) continue
+                    if (cosineSimilarity(mergedVector, currentVectors[j]) >= 0.7) {
+                        merged += " or " + currentStrings[j]
+                        mergedVector = phraseToVector(merged)!!
+                        mergedCount = maxOf(mergedCount, mergeCounts[currentStrings[j]] ?: 0) + 1
+                        used[j] = true
+                        changed = true
                     }
                 }
+
+                used[i] = true
+                newStrings.add(merged)
+                newVectors.add(mergedVector)
+                mergeCounts[merged] = mergedCount
+                priorityQueue.add(merged)
             }
+
+            currentStrings = newStrings
+            currentVectors = newVectors
         }
+
 
         return if (priorityQueue.isNotEmpty()) {
             listOf(priorityQueue.poll())

@@ -23,7 +23,9 @@ class GeminiService {
                 jackson()
             }
         }
+
         return try {
+            val trueUrl = extractFirstImageLink(imgurUrl)
             val response: HttpResponse = client.post(URL_STRING_CLIENT) {
                 headers {
                     // API Limit: 1500 RPD 15 RPM
@@ -33,7 +35,7 @@ class GeminiService {
                     mapOf(
                         "contents" to listOf(
                             mapOf(
-                                "parts" to if (imgurUrl == null) {
+                                "parts" to if (trueUrl == null) {
                                     listOf(mapOf("text" to input))
                                 } else {
                                     listOf(
@@ -41,7 +43,7 @@ class GeminiService {
                                         mapOf(
                                             "inline_data" to mapOf(
                                                 "mime_type" to "image/png", // Or image/jpeg, etc.
-                                                "data" to convertImageToBase64(client.get(imgurUrl).body())
+                                                "data" to convertImageToBase64(client.get(trueUrl).body())
                                             )
                                         )
                                     )
@@ -62,7 +64,14 @@ class GeminiService {
         }
     }
 
-    private fun convertImageToBase64 (imgBytes: ByteArray): String? {
+    private fun convertImageToBase64(imgBytes: ByteArray): String? {
         return Base64.getEncoder().encodeToString(imgBytes)
+    }
+
+    private fun extractFirstImageLink(inputString: String?): String? {
+        val input = inputString ?: return null
+        val regex = "https://i\\.imgur\\.com/[a-zA-Z0-9]+\\.(png|jpeg|jpg|gif)".toRegex()
+        val match = regex.find(input)
+        return match?.value
     }
 }

@@ -57,7 +57,7 @@ class PromptService {
                 }) {
                 headers {
                     // NOTE: there's any API rate limit, so please only uncomment this for demo :)
-                    // append(HttpHeaders.Authorization, "Client-ID $IMGUR_CLIENT_ID")
+                    append(HttpHeaders.Authorization, "Client-ID $IMGUR_CLIENT_ID")
                 }
             }
 

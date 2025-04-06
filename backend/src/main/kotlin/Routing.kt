@@ -24,7 +24,7 @@ fun Application.configureRouting() {
     val promptService = PromptService()
     val responseService = ResponseService()
 
-    // the order technically matters lol since ml one is most likely to be accurate
+    // keep this order
     responseService.addExpert(MLExpert())
     responseService.addExpert(KeywordExpert())
     responseService.addExpert(WebExpert())

@@ -58,5 +58,4 @@ class KeywordExpert : ExpertInterface {
             }
         }
     }
-
 }
