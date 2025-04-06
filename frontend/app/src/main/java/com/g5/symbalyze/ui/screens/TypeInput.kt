@@ -112,6 +112,7 @@ fun TypeInput(navController: NavController) {
                     val res = identifySymbol(inputDesc = userInput)
                     Log.d("debug", res.toString())
                     userInput = ""
+
                     GlobalState.symbolResponse = res
                     navController.navigate("result")
                 }

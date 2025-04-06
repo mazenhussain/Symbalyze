@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.g5.symbalyze.api.identifySymbol
+import com.g5.symbalyze.ui.shared.GlobalState
 import convertCanvasToBase64
 import kotlinx.coroutines.launch
 
@@ -67,13 +68,13 @@ fun DrawInputScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            DrawInput()
+            DrawInput(navController)
         }
     }
 }
 
 @Composable
-fun DrawInput() {
+fun DrawInput(navController: NavController) {
     val lines = remember { mutableStateListOf<Line>() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -137,7 +138,9 @@ fun DrawInput() {
                         val res = identifySymbol(inputImgBase64 = base64)
                         Log.d("debug", res.toString())
                         lines.clear()
-                        // TODO: navController.navigate("result") with the response body somehow
+
+                        GlobalState.symbolResponse = res
+                        navController.navigate("result")
                     }
                 },
                 modifier = Modifier.width(150.dp),

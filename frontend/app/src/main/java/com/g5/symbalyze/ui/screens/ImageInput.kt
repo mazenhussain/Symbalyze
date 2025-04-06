@@ -199,6 +199,7 @@ fun ImageInput(navController: NavController) {
                     Log.d("debug", "base64: $base64Image")
                     val resp = identifySymbol(inputImgBase64 = base64Image)
                     Log.d("debug", resp.toString())
+
                     GlobalState.symbolResponse = resp
                     navController.navigate("result")
                 }
