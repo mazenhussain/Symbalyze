@@ -20,6 +20,7 @@ class KeywordExpert : ExpertInterface {
             else GeminiService().askGemini("Use five word visual description of the image in the link: ", input)
         println(description)
         val result: Symbol? = bestSymbolKeywordMatch(description, symbols)
+        println("keyword expert generated: " + result?.name)
         return result?.name
     }
 

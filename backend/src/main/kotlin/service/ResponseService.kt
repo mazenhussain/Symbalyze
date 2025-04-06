@@ -39,6 +39,7 @@ class ResponseService {
         var tries: Int = 0
 
         while (!acceptable && tries < MAX_NUM_TRIES) {
+            println(">> using experts")
             val newId: String = useExperts(generateExpertInput())
             acceptable = isSatisfactory(newId)
 

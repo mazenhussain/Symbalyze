@@ -1,7 +1,10 @@
-package com.g5.model
+package com.g5.service
 
 import com.g5.service.GeminiService
 import com.g5.service.PromptService
+import com.g5.model.ExpertInterface
+import com.g5.model.Prompt
+import com.g5.model.Response
 import org.slf4j.LoggerFactory
 
 class MLExpert : ExpertInterface {
@@ -35,6 +38,7 @@ class MLExpert : ExpertInterface {
 
             // Extract the symbol name from the Gemini API response
             val symbolName = extractSymbolName(geminiResponse)
+            logger.info("ML expert generated: $symbolName")
 
             symbolName ?: "No matching symbol found"
         } catch (e: Exception) {

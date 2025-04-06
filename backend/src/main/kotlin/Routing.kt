@@ -17,12 +17,14 @@ import com.g5.model.Response
 import com.g5.service.ResponseService
 import com.g5.service.PromptService
 import com.g5.service.KeywordExpert
+import com.g5.service.MLExpert
 
 fun Application.configureRouting() {
     val promptService = PromptService()
     val responseService = ResponseService()
 
     responseService.addExpert(KeywordExpert())
+    responseService.addExpert(MLExpert())
 
     install(ContentNegotiation) {
         jackson()
