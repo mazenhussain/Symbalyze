@@ -73,12 +73,12 @@ fun ImageInputScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            ImageInput()
+            ImageInput(navController)
         }
     }
 }
 @Composable
-fun ImageInput() {
+fun ImageInput(navController: NavController) {
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var downloadUrl by remember { mutableStateOf<String?>(null) }
     var statusMessage by remember { mutableStateOf("no image selected") }
@@ -196,10 +196,11 @@ fun ImageInput() {
             onClick = {
                 coroutineScope.launch {
                     Log.d("debug", "base64: $base64Image")
-                    val res = identifySymbol(inputImgBase64 = base64Image)
-                    Log.d("debug", res.toString())
-                    // TODO: navController.navigate("result") with the response body somehow
+                    val resp = identifySymbol(inputImgBase64 = base64Image)
+                    Log.d("debug", resp.toString())
+                    ResultUpdate(resp)
                 }
+                navController.navigate("result")
             },
             modifier = Modifier.width(150.dp),
             colors = ButtonDefaults.buttonColors(

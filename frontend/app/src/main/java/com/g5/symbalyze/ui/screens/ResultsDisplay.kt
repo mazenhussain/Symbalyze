@@ -34,6 +34,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.g5.symbalyze.api.identifySymbol
+import com.g5.symbalyze.model.SymbolResponse
+import java.util.UUID
+
+var currentResponse: SymbolResponse? = null
+//var currentResponse = SymbolResponse(UUID.fromString("00000000-0000-0000-0000-000000000000"), "empty", "empty")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,10 +67,13 @@ fun ResultsDisplayScreen(navController: NavController) {
     }
 }
 
+fun ResultUpdate(response: SymbolResponse?) {
+    currentResponse = response
+}
+
 @Composable
 fun ResultsDisplay() {
     val lines = remember { mutableStateListOf<Line>() }
-    val result = "Symbol"
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
@@ -78,15 +86,29 @@ fun ResultsDisplay() {
                 .align(Alignment.CenterHorizontally)
                 .offset(y = 48.dp)
         )
-        Text(
-            text = result,
-            style = TextStyle(
-                fontSize = 28.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.SemiBold
-            ), modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .offset(y = 48.dp)
-        )
+        currentResponse?.let {
+            Text(
+                text = it.name,
+                style = TextStyle(
+                    fontSize = 28.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.SemiBold
+                ), modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .offset(y = 48.dp)
+            )
+        }
+        currentResponse?.let {
+            Text(
+                text = it.context,
+                style = TextStyle(
+                    fontSize = 28.sp,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.SemiBold
+                ), modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .offset(y = 48.dp)
+            )
+        }
     }
 }
