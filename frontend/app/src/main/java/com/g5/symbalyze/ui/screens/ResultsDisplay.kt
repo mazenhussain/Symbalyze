@@ -5,9 +5,11 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -35,10 +37,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.g5.symbalyze.api.identifySymbol
 import com.g5.symbalyze.model.SymbolResponse
+import com.g5.symbalyze.ui.shared.GlobalState
 import java.util.UUID
-
-var currentResponse: SymbolResponse? = null
-//var currentResponse = SymbolResponse(UUID.fromString("00000000-0000-0000-0000-000000000000"), "empty", "empty")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,47 +67,45 @@ fun ResultsDisplayScreen(navController: NavController) {
     }
 }
 
-fun ResultUpdate(response: SymbolResponse?) {
-    currentResponse = response
-}
-
 @Composable
 fun ResultsDisplay() {
-    val lines = remember { mutableStateListOf<Line>() }
+    val response = GlobalState.symbolResponse
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+    ) {
         Text(
-            text = "here is what our 3 experts found!",
+            text = "aaaaand here is what our experts found...",
             style = TextStyle(
                 fontSize = 28.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.SemiBold
-            ), modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .offset(y = 48.dp)
+            )
         )
-        currentResponse?.let {
+
+        Spacer(modifier = Modifier.height(48.dp))
+
+        response?.let {
             Text(
-                text = it.name,
+                text = it.symbol.lowercase(),
                 style = TextStyle(
-                    fontSize = 28.sp,
+                    fontSize = 36.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.SemiBold
-                ), modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .offset(y = 48.dp)
+                )
             )
         }
-        currentResponse?.let {
+
+        response?.let {
             Text(
-                text = it.context,
+                text = it.context.lowercase(),
                 style = TextStyle(
-                    fontSize = 28.sp,
+                    fontSize = 20.sp,
                     color = Color.Gray,
-                    fontWeight = FontWeight.SemiBold
-                ), modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .offset(y = 48.dp)
+                    fontWeight = FontWeight.Medium
+                )
             )
         }
     }

@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.g5.symbalyze.api.identifySymbol
+import com.g5.symbalyze.ui.shared.GlobalState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,13 +52,13 @@ fun TypeInputScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TypeInput()
+            TypeInput(navController)
         }
     }
 }
 
 @Composable
-fun TypeInput() {
+fun TypeInput(navController: NavController) {
     var userInput by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val maxlen = 200
@@ -111,7 +112,8 @@ fun TypeInput() {
                     val res = identifySymbol(inputDesc = userInput)
                     Log.d("debug", res.toString())
                     userInput = ""
-                    // TODO: navController.navigate("result") with the response body somehow
+                    GlobalState.symbolResponse = res
+                    navController.navigate("result")
                 }
             },
             modifier = Modifier

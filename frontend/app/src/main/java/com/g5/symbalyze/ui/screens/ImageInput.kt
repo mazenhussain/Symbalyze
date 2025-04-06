@@ -49,6 +49,7 @@ import android.util.Base64
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.graphics.asImageBitmap
+import com.g5.symbalyze.ui.shared.GlobalState
 import convertUriToBase64
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -198,9 +199,9 @@ fun ImageInput(navController: NavController) {
                     Log.d("debug", "base64: $base64Image")
                     val resp = identifySymbol(inputImgBase64 = base64Image)
                     Log.d("debug", resp.toString())
-                    ResultUpdate(resp)
+                    GlobalState.symbolResponse = resp
+                    navController.navigate("result")
                 }
-                navController.navigate("result")
             },
             modifier = Modifier.width(150.dp),
             colors = ButtonDefaults.buttonColors(
