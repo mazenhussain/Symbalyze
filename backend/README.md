@@ -6,6 +6,13 @@ This was created using the [Ktor Project Generator](https://start.ktor.io). It w
 - [Ktor GitHub page](https://github.com/ktorio/ktor)
 - [Routing](https://start.ktor.io/p/routing-default)
 
+This service uses the GloVe (Global Vectors for Word Representation) model. The following is required:
+
+1. Download one of the [pre-trained word vectors](https://github.com/stanfordnlp/GloVe?tab=readme-ov-file#download-pre-trained-word-vectors)
+2. Extract the zip file
+3. Select the file called glove.6B.50d.txt
+4. Move it under src/main/resources/largefiles/
+
 ## Building & Running
 
 | Task              | Description                   |

@@ -3,17 +3,24 @@ package com.g5.service
 import com.g5.model.ExpertInterface
 import com.g5.model.Prompt
 import com.g5.model.Response
+import com.g5.util.GloveLoader
+import java.util.PriorityQueue
 
 class ResponseService {
     companion object {
         private const val MAX_NUM_TRIES = 3
+        private const val GLOVE_MODEL_PATH = "src/main/resources/largefiles/glove.6B.50d.txt"
+
         private const val NO_IMAGE_LINK = "link unavailable"
         private const val NO_SYMBOL = "Could not identify"
         private const val NO_CONTEXT = "No context available"
     }
 
     private val experts: MutableList<ExpertInterface> = mutableListOf()
-    private val knowledge: MutableList<String> = mutableListOf()
+    private var knowledge: String = "none"
+    private val glove: Map<String, List<Double>> by lazy {
+        GloveLoader.loadGloveModel(GLOVE_MODEL_PATH)
+    }
 
     private var input: String = ""
     private var imageLink: String = ""
@@ -34,23 +41,23 @@ class ResponseService {
     }
 
     suspend fun generateResponse(): Response {
-        var acceptable: Boolean = false
         var finalId: String = NO_SYMBOL
         var tries: Int = 0
 
-        while (!acceptable && tries < MAX_NUM_TRIES) {
+        while (tries < MAX_NUM_TRIES) {
             println(">> using experts")
-            val newId: String = useExperts(generateExpertInput())
-            acceptable = isSatisfactory(newId)
+            val expertResponses = useExperts(generateExpertInput())
+            val mergedResponses = mergeSimilarResponses(expertResponses)
 
-            if (acceptable) {
-                finalId = newId
-                break
-            } else {
-                tries += 1
-                knowledge.add(newId)
-            }
+            println(">> merged responses: ${mergedResponses.joinToString("; ")}")
+
+            finalId = mergedResponses.get(0)
+            if (mergedResponses.size == 1) break
+
+            knowledge = mergedResponses.joinToString("; ")
+            tries += 1;
         }
+        println(">> final response: $finalId")
 
         val formattedResponse: Response = Response()
         formattedResponse.setSymbol(finalId)
@@ -59,15 +66,12 @@ class ResponseService {
         return formattedResponse
     }
 
+    // expert helpers
     private fun generateExpertInput(): String {
-        if (knowledge.isEmpty()) {
-            return (if (isImage) (imageLink) else input)
-        } else {
-            return (if (isImage) (imageLink) else input) + ", with additional background information: " + knowledge.joinToString(",")
-        }
+        return (if (isImage) (imageLink) else input) + ", with additional background information that other guesses (in order of likelihood)... " + knowledge
     }
     
-    private suspend fun useExperts(input: String): String {
+    private suspend fun useExperts(input: String): MutableList<String> {
         val expertRes: MutableList<String> = mutableListOf()
 
         for (expert in experts) {
@@ -75,65 +79,85 @@ class ResponseService {
             res?.let { expertRes.add(it) }
         }
 
-        return mergeResponses(expertRes)
+        return expertRes
     }
 
-    private fun mergeResponses(responses: List<String>): String {
-        if (responses.isEmpty()) return NO_SYMBOL
-
-        val stopWords = setOf("the", "a", "an", "of", "in", "to", "for", "on", "at", "by", "with", "about") 
-        val wordCounts = mutableMapOf<String, Int>()
-        val groupedResponses = mutableMapOf<Set<String>, MutableList<String>>()
-
-        for (response in responses) {
-            val words = response.lowercase()
-                .split(Regex("\\W+"))
-                .filter { it.isNotBlank() && it !in stopWords }
-                .toSet()
-
-            for (word in words) {
-                wordCounts[word] = wordCounts.getOrDefault(word, 0) + 1
-            }
-
-            groupedResponses.computeIfAbsent(words) { mutableListOf() }.add(response)
+    // semantic helpers
+    fun mergeSimilarResponses(strings: MutableList<String>): List<String> {
+        val mergeCounts = mutableMapOf<String, Int>()
+        
+        val priorityQueue = PriorityQueue<String> { a, b ->
+            mergeCounts[b]!! - mergeCounts[a]!!
         }
 
-        val sortedWords = wordCounts.entries
-            .sortedByDescending { it.value }
-            .map { it.key }
-
-        val mergedResponses = groupedResponses.entries.map { (wordSet, phrases) ->
-            val mostFrequentWords = wordSet.filter { it in sortedWords.take(5) }
-            val summary = mostFrequentWords.joinToString(" ") { it }
-            "${phrases.distinct().joinToString(" / ")}"
+        strings.forEach { response ->
+            mergeCounts[response] = 0
+            priorityQueue.add(response)
         }
 
-        return mergedResponses.joinToString("; ")
-    }
+        val vectors = strings.mapNotNull { phraseToVector(it) }.toMutableList()
+        var noMergesThisRound = false
 
-    private fun isSatisfactory(response: String): Boolean {
-        val phrases = response.split("; ").map { it.trim() }
-        if (phrases.size == 1) return true
+        while (vectors.size > 1 && !noMergesThisRound) {
+            noMergesThisRound = true
 
-        val phraseCounts = mutableMapOf<String, Int>()
-        val totalResponses = phrases.size
+            for (i in vectors.indices) {
+                for (j in i + 1 until vectors.size) {
+                    if (cosineSimilarity(vectors[i], vectors[j]) >= 0.7) {
+                        val mergedString = strings[i] + " or " + strings[j]
+                        strings[i] = mergedString
+                        strings.removeAt(j)
+                        vectors[i] = phraseToVector(mergedString)!!
 
-        for (phrase in phrases) {
-            val words = phrase.split(Regex("\\W+")).map { it.trim().lowercase() }
-            for (word in words) {
-                phraseCounts[word] = phraseCounts.getOrDefault(word, 0) + 1
+                        val newMergeCount = maxOf(mergeCounts[strings[i]] ?: 0, mergeCounts[strings[j]] ?: 0) + 1
+                        mergeCounts[mergedString] = newMergeCount
+                        priorityQueue.add(mergedString)
+
+                        vectors.removeAt(j)
+                        noMergesThisRound = false
+                        break
+                    }
+                }
             }
         }
 
-        val maxFrequency = phraseCounts.values.maxOrNull() ?: 0
-        val agreementRatio = maxFrequency.toDouble() / totalResponses
-
-        return agreementRatio >= 0.7
+        return if (priorityQueue.isNotEmpty()) {
+            listOf(priorityQueue.poll())
+        } else {
+            strings
+        }
     }
 
+    private fun phraseToVector(phrase: String): List<Double> {
+        val words = phrase.lowercase().split(Regex("\\W+")).filter { it.isNotBlank() }
+        val vectors = words.mapNotNull { glove[it] }
+
+        if (vectors.isEmpty()) return emptyList()
+
+        val vectorLength = vectors[0].size
+        val summed = DoubleArray(vectorLength)
+
+        for (vec in vectors) {
+            for (i in vec.indices) {
+                summed[i] += vec[i]
+            }
+        }
+
+        return summed.map { it / vectors.size }
+    }
+
+    private fun cosineSimilarity(v1: List<Double>, v2: List<Double>): Double {
+        val dot = v1.zip(v2).sumOf { (a, b) -> a * b }
+        val norm1 = Math.sqrt(v1.sumOf { it * it })
+        val norm2 = Math.sqrt(v2.sumOf { it * it })
+
+        return if (norm1 == 0.0 || norm2 == 0.0) 0.0 else dot / (norm1 * norm2)
+    }
+
+    // context helpers
     private suspend fun contextFor(symbol: String): String {
         if (symbol == NO_SYMBOL || experts.isEmpty()) return NO_CONTEXT
-        // TODO: users of gemini should not be instantiating by themselves, ideally have one instance shared across all
+        // TODO: should NOT instantiate gemini each time... ideally have one instance shared across all
         return GeminiService().askGemini("Please concisely describe background context for this symbol: $symbol") ?: NO_CONTEXT
     }
 }
