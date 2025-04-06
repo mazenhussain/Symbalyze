@@ -23,8 +23,9 @@ fun Application.configureRouting() {
     val promptService = PromptService()
     val responseService = ResponseService()
 
-    responseService.addExpert(KeywordExpert())
+    // the order technically matters lol since ml one is most likely to be accurate
     responseService.addExpert(MLExpert())
+    responseService.addExpert(KeywordExpert())
 
     install(ContentNegotiation) {
         jackson()

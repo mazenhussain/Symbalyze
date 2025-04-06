@@ -38,7 +38,6 @@ class MLExpert : ExpertInterface {
 
             // Extract the symbol name from the Gemini API response
             val symbolName = extractSymbolName(geminiResponse)
-            logger.info("ML expert generated: $symbolName")
 
             symbolName ?: "No matching symbol found"
         } catch (e: Exception) {

@@ -49,8 +49,6 @@ class ResponseService {
             val expertResponses = useExperts(generateExpertInput())
             val mergedResponses = mergeSimilarResponses(expertResponses)
 
-            println(">> merged responses: ${mergedResponses.joinToString("; ")}")
-
             finalId = mergedResponses.get(0)
             if (mergedResponses.size == 1) break
 
@@ -99,6 +97,7 @@ class ResponseService {
         var noMergesThisRound = false
 
         while (vectors.size > 1 && !noMergesThisRound) {
+            println(">> merging responses")
             noMergesThisRound = true
 
             for (i in vectors.indices) {
@@ -132,6 +131,7 @@ class ResponseService {
         val words = phrase.lowercase().split(Regex("\\W+")).filter { it.isNotBlank() }
         val vectors = words.mapNotNull { glove[it] }
 
+        if (vectors.isEmpty()) println("no vector for $phrase")
         if (vectors.isEmpty()) return emptyList()
 
         val vectorLength = vectors[0].size
