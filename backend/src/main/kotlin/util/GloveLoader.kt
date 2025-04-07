@@ -7,8 +7,6 @@ object GloveLoader {
     private const val GLOVE_FILE_PATH = "src/main/resources/largefiles/glove.6B.50d.txt"
 
     fun loadGloveModel() {
-        println(">> loading glove as map...")
-
         File(GLOVE_FILE_PATH).useLines { lines ->
             lines.forEach { line ->
                 val parts = line.trim().split(" ")
@@ -20,7 +18,7 @@ object GloveLoader {
             }
         }
 
-        println(">> glovel model loaded in memory!")
+        println("success: glovel model loaded in memory!")
     }
 
     fun getVectorForWord(word: String): List<Double>? {

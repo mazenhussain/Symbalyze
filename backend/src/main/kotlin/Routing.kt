@@ -20,16 +20,18 @@ import com.g5.service.KeywordExpert
 import com.g5.service.MLExpert
 import com.g5.service.WebExpert
 import com.g5.util.GloveLoader
+import com.g5.util.FirebaseLoader
 
 fun Application.configureRouting() {
     val promptService = PromptService()
     val responseService = ResponseService()
 
-    // required for response service
+    // pre-load all singletons
+    FirebaseLoader.initFirebase()
     GloveLoader.loadGloveModel()
 
     // keep this order
-    responseService.addExpert(MLExpert())
+    // responseService.addExpert(MLExpert())
     responseService.addExpert(KeywordExpert())
     // responseService.addExpert(WebExpert())
 
