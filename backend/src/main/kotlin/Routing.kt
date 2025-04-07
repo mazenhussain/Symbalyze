@@ -19,15 +19,19 @@ import com.g5.service.PromptService
 import com.g5.service.KeywordExpert
 import com.g5.service.MLExpert
 import com.g5.service.WebExpert
+import com.g5.util.GloveLoader
 
 fun Application.configureRouting() {
     val promptService = PromptService()
     val responseService = ResponseService()
 
+    // required for response service
+    GloveLoader.loadGloveModel()
+
     // keep this order
     responseService.addExpert(MLExpert())
     responseService.addExpert(KeywordExpert())
-    responseService.addExpert(WebExpert())
+    // responseService.addExpert(WebExpert())
 
     install(ContentNegotiation) {
         jackson()

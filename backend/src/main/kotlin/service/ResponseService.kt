@@ -9,8 +9,6 @@ import java.util.PriorityQueue
 class ResponseService {
     companion object {
         private const val MAX_NUM_TRIES = 3
-        private const val GLOVE_MODEL_PATH = "src/main/resources/largefiles/glove.6B.50d.txt"
-
         private const val NO_IMAGE_LINK = "link unavailable"
         private const val NO_SYMBOL = "Could not identify"
         private const val NO_CONTEXT = "No context available"
@@ -18,9 +16,6 @@ class ResponseService {
 
     private val experts: MutableList<ExpertInterface> = mutableListOf()
     private var knowledge: String = "none"
-    private val glove: Map<String, List<Double>> by lazy {
-        GloveLoader.loadGloveModel(GLOVE_MODEL_PATH)
-    }
 
     private var input: String = ""
     private var imageLink: String = ""
@@ -49,7 +44,7 @@ class ResponseService {
             val expertResponses = useExperts(generateExpertInput())
             val mergedResponses = mergeSimilarResponses(expertResponses)
 
-            finalId = mergedResponses.get(0)
+            finalId = mergedResponses.firstOrNull() ?: finalId
             if (mergedResponses.size == 1) break
 
             knowledge = mergedResponses.joinToString("; ")
@@ -66,7 +61,7 @@ class ResponseService {
 
     // expert helpers
     private fun generateExpertInput(): String {
-        return (if (isImage) (imageLink) else input) + ", with additional background information that other guesses (in order of likelihood)... " + knowledge
+        return (if (isImage) (imageLink) else input) + ", with additional background information that other guesses are (in order of likelihood)... " + knowledge
     }
     
     private suspend fun useExperts(input: String): MutableList<String> {
@@ -81,88 +76,86 @@ class ResponseService {
     }
 
     // semantic helpers
-    fun mergeSimilarResponses(strings: MutableList<String>): List<String> {
+    fun mergeSimilarResponses(strings: List<String>): List<String> {
         println(">> merging responses")
+
         val mergeCounts = mutableMapOf<String, Int>()
-        
-        val priorityQueue = PriorityQueue<String> { a, b ->
-            mergeCounts[b]!! - mergeCounts[a]!!
-        }
+        val visited = BooleanArray(strings.size)
 
-        strings.forEach { response ->
-            mergeCounts[response] = 0
-            priorityQueue.add(response)
-        }
+        // count number of alike strings per "source"
+        for (i in strings.indices) {
+            if (visited[i]) continue
+            val vecA = phraseToVector(strings[i]) ?: continue
 
-        var currentStrings = strings.toMutableList()
-        var currentVectors = currentStrings.mapNotNull { phraseToVector(it) }
+            for (j in i + 1 until strings.size) {
+                if (visited[j]) continue
+                val vecB = phraseToVector(strings[j]) ?: continue
 
-        var changed = true
-        while (changed) {
-            changed = false
-            val newStrings = mutableListOf<String>()
-            val newVectors = mutableListOf<List<Double>>()
-            val used = BooleanArray(currentStrings.size)
-
-            for (i in currentVectors.indices) {
-                if (used[i]) continue
-                var merged = currentStrings[i]
-                var mergedVector = currentVectors[i]
-                var mergedCount = mergeCounts[merged] ?: 0
-
-                for (j in i + 1 until currentVectors.size) {
-                    if (used[j]) continue
-                    if (cosineSimilarity(mergedVector, currentVectors[j]) >= 0.7) {
-                        merged += " or " + currentStrings[j]
-                        mergedVector = phraseToVector(merged)!!
-                        mergedCount = maxOf(mergedCount, mergeCounts[currentStrings[j]] ?: 0) + 1
-                        used[j] = true
-                        changed = true
-                    }
+                if (cosineSimilarity(vecA, vecB) >= 0.7) {
+                    mergeCounts[strings[i]] = (mergeCounts[strings[i]] ?: 0) + 1
+                    visited[j] = true
                 }
-
-                used[i] = true
-                newStrings.add(merged)
-                newVectors.add(mergedVector)
-                mergeCounts[merged] = mergedCount
-                priorityQueue.add(merged)
             }
-
-            currentStrings = newStrings
-            currentVectors = newVectors
         }
 
-
-        return if (priorityQueue.isNotEmpty()) {
-            listOf(priorityQueue.poll())
-        } else {
-            strings
+        // add all "sources", ordered by number of alike strings
+        val pq = PriorityQueue<String> { a, b -> 
+            (mergeCounts[b] ?: 0) - (mergeCounts[a] ?: 0)
         }
+
+        pq.addAll(mergeCounts.keys)
+
+        // include "loners", who did not have any alike strings
+        strings.forEachIndexed { i, str ->
+            if (!visited[i] && str !in mergeCounts) {
+                pq.add(str)
+            }
+        }
+
+        return generateSequence { pq.poll() }.toList()
     }
+
 
     private fun phraseToVector(phrase: String): List<Double> {
         val words = phrase.lowercase().split(Regex("\\W+")).filter { it.isNotBlank() }
-        val vectors = words.mapNotNull { glove[it] }
+        val summed = DoubleArray(50)
+        var validVectorsCount = 0
 
-        if (vectors.isEmpty()) println("no vector for $phrase")
-        if (vectors.isEmpty()) return emptyList()
-
-        val vectorLength = vectors[0].size
-        val summed = DoubleArray(vectorLength)
-
-        for (vec in vectors) {
-            for (i in vec.indices) {
-                summed[i] += vec[i]
+        for (word in words) {
+            val vector = GloveLoader.getVectorForWord(word)
+            if (vector != null) {
+                vector.indices.forEach { i -> 
+                    summed[i] += vector[i]
+                }
+                validVectorsCount++
             }
         }
 
-        return summed.map { it / vectors.size }
+        if (validVectorsCount == 0) {
+            println(">> no vectors found for phrase: $phrase")
+            return emptyList()
+        }
+
+        return summed.map { it / validVectorsCount }
     }
 
     private fun cosineSimilarity(v1: List<Double>, v2: List<Double>): Double {
-        val dot = v1.zip(v2).sumOf { (a, b) -> a * b }
-        val norm1 = Math.sqrt(v1.sumOf { it * it })
-        val norm2 = Math.sqrt(v2.sumOf { it * it })
+        println(">> calculating cosine similarity")
+
+        if (v1.isEmpty() || v2.isEmpty()) return 0.0
+
+        var dot = 0.0
+        var norm1Squared = 0.0
+        var norm2Squared = 0.0
+
+        for (i in v1.indices) {
+            dot += v1[i] * v2[i]
+            norm1Squared += v1[i] * v1[i]
+            norm2Squared += v2[i] * v2[i]
+        }
+
+        val norm1 = Math.sqrt(norm1Squared)
+        val norm2 = Math.sqrt(norm2Squared)
 
         return if (norm1 == 0.0 || norm2 == 0.0) 0.0 else dot / (norm1 * norm2)
     }
@@ -171,6 +164,6 @@ class ResponseService {
     private suspend fun contextFor(symbol: String): String {
         if (symbol == NO_SYMBOL || experts.isEmpty()) return NO_CONTEXT
         // TODO: should NOT instantiate gemini each time... ideally have one instance shared across all
-        return GeminiService().askGemini("Please concisely describe background context for this symbol: $symbol") ?: NO_CONTEXT
+        return GeminiService().askGemini("Concisely describe background context for this symbol: $symbol") ?: NO_CONTEXT
     }
 }
