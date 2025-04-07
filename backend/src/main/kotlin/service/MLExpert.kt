@@ -8,8 +8,6 @@ import com.g5.model.Response
 import org.slf4j.LoggerFactory
 
 class MLExpert : ExpertInterface {
-
-    // private val geminiService = GeminiService()
     private val promptService = PromptService()
     private val logger = LoggerFactory.getLogger(MLExpert::class.java)
 

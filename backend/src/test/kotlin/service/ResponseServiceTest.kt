@@ -30,6 +30,7 @@ class ResponseServiceTest {
         assertEquals(2, responseService.getExpertCount())
     }
 
+    // COMMENTED OUT DUE TO INFRA CHANGES
     // @Test
     // fun `generateResponse should return a unanimous response`() = runBlocking {
     //     coEvery { expert1.generateResponse(any()) } returns "New Balance"

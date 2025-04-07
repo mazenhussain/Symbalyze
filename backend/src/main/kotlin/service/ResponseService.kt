@@ -10,8 +10,8 @@ class ResponseService {
     companion object {
         private const val MAX_NUM_TRIES = 3
         private const val NO_IMAGE_LINK = "link unavailable"
-        private const val NO_SYMBOL = "Could not identify"
-        private const val NO_CONTEXT = "No context available"
+        private const val NO_SYMBOL = "could not identify"
+        private const val NO_CONTEXT = "no context available"
     }
 
     private val experts: MutableList<ExpertInterface> = mutableListOf()
@@ -61,7 +61,7 @@ class ResponseService {
 
     // expert helpers
     private fun generateExpertInput(): String {
-        return (if (isImage) (imageLink) else input) + ", with additional background information that other guesses are (in order of likelihood)... " + knowledge
+        return (if (isImage) (imageLink) else input) + " - keep in mind that the other guesses, in order of likelihood, are... " + knowledge
     }
     
     private suspend fun useExperts(input: String): MutableList<String> {
@@ -163,7 +163,6 @@ class ResponseService {
     // context helpers
     private suspend fun contextFor(symbol: String): String {
         if (symbol == NO_SYMBOL || experts.isEmpty()) return NO_CONTEXT
-        // TODO: should NOT instantiate gemini each time... ideally have one instance shared across all
         return GeminiService.askGemini("Concisely describe background context for this symbol: $symbol") ?: NO_CONTEXT
     }
 }

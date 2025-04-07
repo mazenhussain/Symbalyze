@@ -7,9 +7,7 @@ import com.google.cloud.firestore.Firestore
 import com.google.firebase.cloud.FirestoreClient
 import java.io.FileInputStream
 
-
 class KeywordExpert : ExpertInterface {
-
     override suspend fun generateResponse(input: String, isImage: Boolean?): String? {
         val symbols = getStoredSymbols()
         val description = if(isImage == false) input
