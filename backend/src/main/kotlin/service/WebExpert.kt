@@ -33,7 +33,7 @@ class WebExpert : ExpertInterface {
             // Gemini will then use that list of snippets to produce a related logo/symbol name 
 
             println("Symbol extracted: $symbol")
-            symbol
+            symbol?.trim()
         } catch (e: Exception) {
             println("Error in WebExpert: ${e.message}")
             "Error extracting symbol"
