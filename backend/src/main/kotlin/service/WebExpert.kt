@@ -21,16 +21,20 @@ class WebExpert : ExpertInterface {
                 } else {
                     input
                 }
+                // if the input was an image, gemini will describe it as a sentence and if not it will just be the user text description
 
             println("Visual Description: $visualDescription")
+            // priniting the visual description of the iamge/text input
 
             val searchResults = getSearchSnippets(visualDescription)
             println("Top 5 search snippets:\n$searchResults")
+            // only scraping the first 5 links that pop up on google 
 
             val summaryPrompt =
                 "From the following search result snippets: \"$searchResults\", extract the single most likely brand or symbol name being described. Only return the name."
 
             val symbol = geminiService.askGemini(summaryPrompt)
+            // Gemini will then use that list of snippets to produce a related logo/symbol name 
 
             println("Symbol extracted: $symbol")
             symbol
@@ -40,6 +44,7 @@ class WebExpert : ExpertInterface {
         }
     }
 
+    // This function is used to filter the 5 snippets 
     private fun getSearchSnippets(query: String): String {
         val url =
             "https://serpapi.com/search?q=${query.replace(" ", "+")}&engine=google&api_key=$SERP_API_KEY"
@@ -58,6 +63,7 @@ class WebExpert : ExpertInterface {
         return titles.joinToString(" ")
     }
 
+    // This function checks the prefix of the input to check if its a valid url and not just a text input
     private fun isValidUrl(url: String): Boolean {
         return url.startsWith("http://") || url.startsWith("https://")
     }
