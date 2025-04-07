@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 
 class MLExpert : ExpertInterface {
 
-    private val geminiService = GeminiService()
+    // private val geminiService = GeminiService()
     private val promptService = PromptService()
     private val logger = LoggerFactory.getLogger(MLExpert::class.java)
 
@@ -33,7 +33,7 @@ class MLExpert : ExpertInterface {
             logger.info("Generated Prompt: ${prompt.getInput()} with ImageLink: ${prompt.getImageLink()}")
 
             // Use GeminiService to get a response from the Gemini API
-            val geminiResponse = geminiService.askGemini(prompt.getInput(), prompt.getImageLink())
+            val geminiResponse = GeminiService.askGemini(prompt.getInput(), prompt.getImageLink())
             logger.info("Gemini API Response: $geminiResponse")
 
             // Extract the symbol name from the Gemini API response

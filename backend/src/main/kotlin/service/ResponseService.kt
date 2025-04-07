@@ -37,7 +37,7 @@ class ResponseService {
 
     suspend fun generateResponse(): Response {
         var finalId: String = NO_SYMBOL
-        var tries: Int = 0
+        var tries: Int = 1
 
         while (tries < MAX_NUM_TRIES) {
             println(">> using experts")
@@ -164,6 +164,6 @@ class ResponseService {
     private suspend fun contextFor(symbol: String): String {
         if (symbol == NO_SYMBOL || experts.isEmpty()) return NO_CONTEXT
         // TODO: should NOT instantiate gemini each time... ideally have one instance shared across all
-        return GeminiService().askGemini("Concisely describe background context for this symbol: $symbol") ?: NO_CONTEXT
+        return GeminiService.askGemini("Concisely describe background context for this symbol: $symbol") ?: NO_CONTEXT
     }
 }

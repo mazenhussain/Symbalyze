@@ -19,6 +19,8 @@ import com.g5.service.PromptService
 import com.g5.service.KeywordExpert
 import com.g5.service.MLExpert
 import com.g5.service.WebExpert
+
+import com.g5.service.GeminiService
 import com.g5.util.GloveLoader
 import com.g5.util.FirebaseLoader
 
@@ -29,11 +31,12 @@ fun Application.configureRouting() {
     // pre-load all singletons
     FirebaseLoader.initFirebase()
     GloveLoader.loadGloveModel()
+    GeminiService.initGeminiClient()
 
-    // keep this order
-    // responseService.addExpert(MLExpert())
+    // subscribe experts
+    responseService.addExpert(MLExpert())
     responseService.addExpert(KeywordExpert())
-    // responseService.addExpert(WebExpert())
+    responseService.addExpert(WebExpert())
 
     install(ContentNegotiation) {
         jackson()

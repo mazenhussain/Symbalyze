@@ -7,7 +7,7 @@ import org.json.JSONObject
 
 class WebExpert : ExpertInterface {
 
-    private val geminiService = GeminiService()
+    // private val geminiService = GeminiService()
     // private val promptService = PromptService()
     private val client = OkHttpClient()
 
@@ -17,7 +17,7 @@ class WebExpert : ExpertInterface {
         return try {
             val visualDescription =
                 if (isImage == true && isValidUrl(input)) {
-                    geminiService.askGemini("Describe this logo in a sentence.", input)
+                    GeminiService.askGemini("Describe this logo in a sentence.", input)
                 } else {
                     input
                 }
@@ -33,7 +33,7 @@ class WebExpert : ExpertInterface {
             val summaryPrompt =
                 "From the following search result snippets: \"$searchResults\", extract the single most likely brand or symbol name being described. Only return the name."
 
-            val symbol = geminiService.askGemini(summaryPrompt)
+            val symbol = GeminiService.askGemini(summaryPrompt)
             // Gemini will then use that list of snippets to produce a related logo/symbol name 
 
             println("Symbol extracted: $symbol")

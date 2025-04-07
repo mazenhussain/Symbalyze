@@ -13,7 +13,7 @@ class KeywordExpert : ExpertInterface {
     override suspend fun generateResponse(input: String, isImage: Boolean?): String? {
         val symbols = getStoredSymbols()
         val description = if(isImage == false) input
-            else GeminiService().askGemini("Use five word visual description of the image in the link: ", input)
+            else GeminiService.askGemini("Use five word visual description of the image in the link: ", input)
         println(description)
         val result: Symbol? = bestSymbolKeywordMatch(description, symbols)
         println("keyword expert generated: " + result?.name)

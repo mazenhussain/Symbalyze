@@ -18,7 +18,7 @@ object GloveLoader {
             }
         }
 
-        println("success: glovel model loaded in memory!")
+        println("success: GloVe model loaded in memory!")
     }
 
     fun getVectorForWord(word: String): List<Double>? {

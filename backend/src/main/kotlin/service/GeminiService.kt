@@ -11,22 +11,29 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.call.*
 import java.util.Base64
 
-class GeminiService {
-    companion object {
-        const val GEMINI_API_KEY = "AIzaSyCKocdJqOPdZ7L73-8A5EQJqZN5HORCQzM"
-        const val URL_STRING_CLIENT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$GEMINI_API_KEY"
-    }
+object GeminiService {
+    private const val GEMINI_API_KEY = "AIzaSyCKocdJqOPdZ7L73-8A5EQJqZN5HORCQzM"
+    private const val URL_STRING_CLIENT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$GEMINI_API_KEY"
 
-    suspend fun askGemini(input: String, imgurUrl: String? = null): String {
-        val client = HttpClient(CIO) {
+    private val client: HttpClient by lazy {
+        println("success: Gemini client initialized!")
+        HttpClient(CIO) {
             install(ContentNegotiation) {
                 jackson()
             }
         }
+    }
 
+    fun initGeminiClient() {
+        client
+    }
+
+    suspend fun askGemini(input: String, imgurUrl: String? = null): String {
         return try {
+            val activeClient = client ?: error("Gemini client not initialized. Call initGeminiClient() first.")
             val trueUrl = extractFirstImageLink(imgurUrl)
-            val response: HttpResponse = client.post(URL_STRING_CLIENT) {
+
+            val response: HttpResponse = activeClient.post(URL_STRING_CLIENT) {
                 headers {
                     // API Limit: 1500 RPD 15 RPM
                     append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -59,8 +66,6 @@ class GeminiService {
         } catch (e: Exception) {
             println("Request failed: ${e.message}")
             "Request failed"
-        } finally {
-            client.close()
         }
     }
 

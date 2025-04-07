@@ -13,9 +13,9 @@ object FirebaseLoader {
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .build()
             FirebaseApp.initializeApp(options)
-            println("success: Firebase initialized.")
+            println("success: Firebase initialized!")
         } else {
-            println("warning: Firebase already initialized.")
+            println("warning: Firebase already initialized!")
         }
     }
 }
