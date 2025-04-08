@@ -5,6 +5,8 @@ import com.g5.model.Prompt
 import com.g5.model.Response
 import com.g5.util.GloveLoader
 import java.util.PriorityQueue
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.async
 
 class ResponseService {
     companion object {
@@ -63,16 +65,15 @@ class ResponseService {
     private fun generateExpertInput(): String {
         return (if (isImage) (imageLink) else input) + " - keep in mind that the other guesses, in order of likelihood, are... " + knowledge
     }
-    
-    private suspend fun useExperts(input: String): MutableList<String> {
-        val expertRes: MutableList<String> = mutableListOf()
 
-        for (expert in experts) {
-            val res: String? = expert.generateResponse(input, isImage)
-            res?.let { expertRes.add(it) }
+    private suspend fun useExperts(input: String): MutableList<String> = coroutineScope {
+        val deferredResponses = experts.map { expert ->
+            async {
+                expert.generateResponse(input, isImage)
+            }
         }
 
-        return expertRes
+        deferredResponses.mapNotNull { it.await() }.toMutableList()
     }
 
     // semantic helpers
@@ -163,6 +164,6 @@ class ResponseService {
     // context helpers
     private suspend fun contextFor(symbol: String): String {
         if (symbol == NO_SYMBOL || experts.isEmpty()) return NO_CONTEXT
-        return GeminiService.askGemini("Concisely describe background context for this symbol: $symbol") ?: NO_CONTEXT
+        return GeminiService.askGemini("Concisely describe background context for this symbol: $symbol. NO MARKDOWN.") ?: NO_CONTEXT
     }
 }
