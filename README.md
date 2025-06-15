@@ -1,6 +1,6 @@
 ## 1 • Project Purpose
 
-**Symbalyze** is a mobile symbol identification app whose chief goal is to **showcase how well chosen software architecture patterns can tame a real AI workflow**. Rather than aiming for commercial release, the project was built as a teaching artifact: users can photograph, draw, or describe an unfamiliar symbol and receive an identification, but the real lesson is how the codebase stays clean, scalable, and maintainable by applying textbook patterns.
+**Symbalyze** is a symbol identification mobile application that uses 3 different 'expert' services which work together in parallel to identify a symbol uploaded by the user. It was developed to demonstrate a practical understanding of software architecture design patterns and their application in real-world systems. The project focuses on symbol identification through various input modes while emphasizing architectural principles such as modularity, scalability, and separation of concerns. Its primary objective is to illustrate how thoughtful architectural choices can support a multi-service system.
 
 ---
 
